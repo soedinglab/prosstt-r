@@ -1,0 +1,5 @@
+Genes: 867
+pseudotimes: [50, 50, 50, 50, 50]
+topology: [[0, 1], [0, 2], [2, 3], [2, 4]]
+#modules: 29
+random seed: 31884

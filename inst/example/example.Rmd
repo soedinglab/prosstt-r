@@ -1,0 +1,110 @@
+---
+title: "Evaluating predictions on `PROSSTT` simulations"
+output: html_notebook
+---
+
+The [`PROSSTT`](https://github.com/soedinglab/prosstt) suite simulates single-cell RNA-seq count data for complex differentiation topologies. This R repository contains all the necessary code to evaluate predictions made on such datasets. With PROSSTT simulations and the evaluation code it is easy to build comprehensive benchmark pipelines, like in the [`MERLoT`](https://github.com/soedinglab/prosstt) benchmark.
+
+We start with reading the simulation files. In order to produce a prediction we need the simulation itself, and in order to evaluate it we need its parameter files. Here we will be using a prepackaged example: 
+
+```{r}
+# find the files
+sim_file <- system.file("example/simulations", "sim46_simulation.txt", package = "prosstt")
+cell_params_file <- system.file("example/simulations", "sim46_cellparams.txt", package = "prosstt")
+params_file <- system.file("example/simulations", "sim46_params.txt", package = "prosstt")
+
+# read them
+simulation <- read.table(sim_file, sep = "\t", header = TRUE, row.names = 1)
+cell_params <- read.table(cell_params_file, sep = "\t", header = TRUE, row.names = 1)
+```
+
+Now it is time to preprocess the data and make predictions. For demonstration purposes we will be using [Monocle 2](http://cole-trapnell-lab.github.io/monocle-release/) and MERLoT. If you already know how to get branch and pseudotime assignments from your method you can skip the following sections and go directly to the [evaluation](#evaluation).
+
+## Trajectory inference: Monocle 2 {#monocle}
+
+Load monocle and format the simulation as a CellDataSet object.
+```{r}
+library(monocle)
+exprs <- t(as.matrix(simulation))
+data <- newCellDataSet(exprs, expressionFamily = negbinomial(), lowerDetectionLimit = 1)
+```
+
+Next we have to perform some preprocessing steps:
+```{r}
+data <- estimateSizeFactors(data)
+data <- estimateDispersions(data)
+```
+
+Monocle can now find the genes it considers important for the process...
+```{r}
+data <- detectGenes(data, min_expr=0.1)
+disp_table <- dispersionTable(data)
+ordering_genes <- subset(disp_table, mean_expression >= 0.5 & dispersion_empirical >= 2*dispersion_fit)$gene_id
+data <- setOrderingFilter(data, ordering_genes)
+```
+
+...and then perform dimensionality reduction and infer a lineage tree.
+```{r}
+data <- reduceDimension(data, max_components = 3, auto_param_selection = TRUE)
+data <- orderCells(data, reverse=FALSE)
+```
+
+Before we retrieve Monocle's prediction though, we must make sure it starts measuring its pseudotime from the correct point. Since Monocle can only place the starting point of pseudotime calculation at an endpoint, we have to find the branch it should start from. This can be done in an arbitrarily complicated way; here we will look if a cell with minimum pseudotime is in an outer branch and select that branch as the starting one.
+```{r}
+time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
+start <- min(which(time == min(time))) # there may be more than one; in this case just pick the first.
+start_branch <- pData(data)$State[start]
+```
+
+Now let Monocle do the assignments again. This time we can retrieve the predictions:
+```{r}
+data <- orderCells(data, root_state = start_branch)
+monocle.branches <- pData(data)$State
+monocle.pseudotime <- pData(data)$Pseudotime
+```
+
+## MERLoT + destiny {#merlot}
+
+We will use MERLoT with diffusion maps produced by [destiny](https://bioconductor.org/packages/release/bioc/html/destiny.html). Both packages do not contain normalization routines, so we do a simple one manually:
+```{r}
+# first normalize with the total mRNA per cell
+sum1 <- apply(simulation, 1, sum)
+scalings <- sum1/mean(sum1)
+X <- (1/scalings)*simulation
+
+# working with log-transformed data is better for destiny
+X <- log(X + 1)
+```
+
+Now we can calculate the diffusion map:
+```{r}
+library(destiny)
+dm <- DiffusionMap(X, sigma = "local", k = 15)
+cell_coordinates <- dm@eigenvectors[,1:3]
+```
+
+Now we can use MERLoT - calculate the scaffold tree, derive the elastic tree from it and then embed the elastic tree in the original expression space:
+```{r}
+scaffold <- CalculateScaffoldTree(cell_coordinates)
+elastic <- CalculateElasticTree(scaffold)
+embedded <- GenesSpaceEmbedding(ExpressionMatrix = X, ElasticTree = elastic)
+```
+
+Now we can calculate pseudotimes from the starting cell we determined before, and so retrieve branch and pseudotime assignments.
+```{r}
+merlot.prediction <- CalculatePseudotimes(embedded, C0 = start)
+merlot.branches <- merlot.prediction$Cells2Branches
+merlot.pseudotime <- merlot.prediction$Times_cells
+```
+
+## Evaluation {#evaluation}
+
+Now we can calculate
+```{r}
+
+```
+
+
+```{r}
+
+```
