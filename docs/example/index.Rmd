@@ -1,0 +1,237 @@
+---
+title: "Evaluating predictions on `PROSSTT` simulations"
+output: html_notebook
+---
+
+The [`PROSSTT`](https://github.com/soedinglab/prosstt) suite simulates single-cell RNA-seq count data for complex differentiation topologies. This R repository contains all the necessary code to evaluate predictions made on such datasets. With PROSSTT simulations and the evaluation code it is easy to build comprehensive benchmark pipelines, like in the [`MERLoT`](https://github.com/soedinglab/prosstt) benchmark.
+
+We start with reading the simulation files. In order to produce a prediction we need the simulation itself, and in order to evaluate it we need its parameter files. Here we will be using a prepackaged example: 
+
+```{r}
+# find the files
+sim_file <- system.file("example/simulations", "sim46_simulation.txt", package = "prosstt")
+cell_params_file <- system.file("example/simulations", "sim46_cellparams.txt", package = "prosstt")
+params_file <- system.file("example/simulations", "sim46_params.txt", package = "prosstt")
+
+# read them
+simulation <- read.table(sim_file, sep = "\t", header = TRUE, row.names = 1)
+cell_params <- read.table(cell_params_file, sep = "\t", header = TRUE, row.names = 1)
+```
+
+Now it is time to preprocess the data and make predictions. For demonstration purposes we will be using [Monocle 2](http://cole-trapnell-lab.github.io/monocle-release/) and MERLoT. If you already know how to get branch and pseudotime assignments from your method you can skip the following sections and go directly to the [evaluation](#evaluation).
+
+## Trajectory inference: Monocle 2 {#monocle}
+
+Load monocle and format the simulation as a CellDataSet object.
+```{r, message=FALSE, warning=FALSE}
+library(monocle)
+exprs <- t(as.matrix(simulation))
+data <- newCellDataSet(exprs, expressionFamily = negbinomial(), lowerDetectionLimit = 1)
+```
+
+Next we have to perform some preprocessing steps:
+```{r, message=FALSE, warning=FALSE}
+data <- estimateSizeFactors(data)
+data <- estimateDispersions(data)
+```
+
+Monocle can now find the genes it considers important for the process...
+```{r}
+data <- detectGenes(data, min_expr=0.1)
+disp_table <- dispersionTable(data)
+ordering_genes <- subset(disp_table, mean_expression >= 0.5 & dispersion_empirical >= 2*dispersion_fit)$gene_id
+data <- setOrderingFilter(data, ordering_genes)
+```
+
+...and then perform dimensionality reduction and infer a lineage tree.
+```{r}
+data <- reduceDimension(data, max_components = 3, auto_param_selection = TRUE)
+data <- orderCells(data, reverse=FALSE)
+```
+
+Before we retrieve Monocle's prediction though, we must make sure it starts measuring its pseudotime from the correct point. Since Monocle can only place the starting point of pseudotime calculation at an endpoint, we have to find the branch it should start from. This can be done in an arbitrarily complicated way; here we will look if a cell with minimum pseudotime is in an outer branch and select that branch as the starting one.
+```{r}
+time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
+start <- min(which(time == min(time))) # there may be more than one; in this case just pick the first.
+start_branch <- pData(data)$State[start]
+```
+
+Now let Monocle do the assignments again. This time we can retrieve the predictions:
+```{r}
+data <- orderCells(data, root_state = start_branch)
+monocle.branches <- pData(data)$State
+monocle.pseudotime <- pData(data)$Pseudotime
+```
+
+## MERLoT + destiny {#merlot}
+
+We will use MERLoT with diffusion maps produced by [destiny](https://bioconductor.org/packages/release/bioc/html/destiny.html). Both packages do not contain normalization routines, so we do a simple one manually:
+```{r}
+# first normalize with the total mRNA per cell
+sum1 <- apply(simulation, 1, sum)
+scalings <- sum1/mean(sum1)
+X <- (1/scalings)*simulation
+
+# working with log-transformed data is better for destiny
+X <- log(X + 1)
+```
+
+Now we can calculate the diffusion map:
+```{r}
+library(destiny)
+dm <- DiffusionMap(X, sigma = "local", k = 15)
+cell_coordinates <- dm@eigenvectors[,1:3]
+```
+
+Now we can use MERLoT - calculate the scaffold tree, derive the elastic tree from it and then embed the elastic tree in the original expression space:
+```{r, message=FALSE, warning=FALSE}
+library(merlot)
+scaffold <- CalculateScaffoldTree(cell_coordinates)
+elastic <- CalculateElasticTree(scaffold)
+embedded <- GenesSpaceEmbedding(ExpressionMatrix = X, ElasticTree = elastic)
+```
+
+Now we can calculate pseudotimes from the starting cell we determined before, and so retrieve branch and pseudotime assignments.
+```{r}
+merlot.prediction <- CalculatePseudotimes(embedded, C0 = start)
+merlot.branches <- merlot.prediction$Cells2Branches
+merlot.pseudotime <- merlot.prediction$Times_cells
+```
+
+## Baseline predictors
+
+In order to have something bad and good to compare against, we will make a random predictor (who assigns branches and pseudotimes randomly) and a cheating predictor, who copies the true branch and pseudotime assignments. As a middle ground, we will make a naive predictor, who predicts everything to be in the same branch and in the same pseudotime.
+
+```{r}
+N <- dim(simulation)[1] # total number of cells
+random.branches <- sample(1:5, N, replace = TRUE)
+random.pseudotime <- sample(1:150, N, replace = TRUE)
+
+cheat.branches <- cell_params$branches
+cheat.pseudotime <- cell_params$pseudotime
+
+naive.branches <- rep(1, N)
+naive.branches[1] <- 2 # we need at least 2 clusters otherwise some of the metrics won't work
+naive.pseudotime <- rep(1, N)
+```
+
+## Evaluation {#evaluation}
+
+```{r}
+library(prosstt)
+```
+
+There is, to the best of our knowledge, no measure to assess branch assignment and pseudotime prediction at the same time, so we treat them as separate problems.
+
+### Branch assignment
+
+Branch assignment can be viewed as a clustering problem, where the branch identity of each cell in the simulation is its true cluster identity. Comparing pairs of points then defines a truth table:
+```{r}
+# TP: pair of points in same cluster in prediction, truth
+# TN: pair of points in diff. cluster in prediction, truth
+# FN: pair of points in diff. cluster in prediction, same in truth
+# FP: pair of points in same cluster in prediction, diff. in truth
+# when there are NA values in the predictions:
+# NAs are considered FNs
+monocle.table <- assign_status(prediction = monocle.branches, truth = cell_params$branches)
+```
+
+This unlocks all [external evaluation](https://en.wikipedia.org/wiki/Cluster_analysis#External_evaluation) measures that are based on truth tables. Five of these are implemented here (unweighted Rand Index, Matthews Correlation Coefficient, F measure, Jaccard Index, and Fowkles-Mallows Index).
+```{r}
+matthews_cor(monocle.table)
+```
+
+While all the aforementioned indices and measures are well established, we feel they may be suboptimal performance indicators for the problem at hand, since they don't take cluster structure into consideration. In their place we suggest the adjusted Mutual Information, a normalization of Mutual Information which assumes a hypergeometric background distribution (for more details and some justification, please refer to the supplemental material of the PROSSTT paper).
+
+```{r}
+adjusted_mi(prediction = monocle.branches, truth = cell_params$branches)
+```
+
+### Pseudotime prediction
+
+Pseudotime quantifies progress through the process; developmental time. Since it is not directly translatable to wall time, its absolute value is not important. Rather, it is important that cells are ordered correctly, and cells from different developmental stages are not mixed together in the lineage tree reconstruction. Therefore assessing pseudotime predictions consists of comparing ordered sequences; the ordering of cells that stems from the labeled pseudotime and the ordering from the predicted pseudotime.
+
+Similar to previously, one can compare the relative ordering of all pairs of cells in the annotation and the prediction, in order to calculate the (unweighted) Goodman-Kruskal and (unweighted) Kendall indices. It is easy to extend these indices to take into account the pseudotime distance between the cells.
+```{r}
+goodman_kruskal_index(cell_params$pseudotime, merlot.pseudotime, weighted = FALSE)
+```
+
+Both indices have symmetric formulas, so the order of the arguments is not important. Our experience has shown that all four indices correlate very well with each other.
+
+However there is another concern when it comes to pseudotime; pseudotime only establishes a partial ordering on cells and no absolute time. Therefore, cells on branches not passed through one after the other cannot be compared. In order to circumvent this problem, we find the longest path in the tree (from the root to a leaf) and compare the predicted pseudotime with the simulated one for the cells on this path.
+```{r}
+longest_path <- get_lpgk_indices(params_file, cell_params)
+true_times <- cell_params$pseudotime[longest_path]
+merlot.longest_path <- merlot.pseudotime[longest_path]
+```
+
+It is then valid to calculate one of the indices on this subset of the lineage tree:
+```{r}
+goodman_kruskal_index(true_times, merlot.longest_path, weighted = FALSE)
+```
+
+In order to do everything at once:
+
+```{r}
+cheat.result <- evaluate_method("cheat", cheat.branches, cheat.pseudotime, cell_params, params_file)
+merlot.result <- evaluate_method("merlot", merlot.branches, merlot.pseudotime, cell_params, params_file)
+monocle.result <- evaluate_method("monocle", monocle.branches, monocle.pseudotime, cell_params, params_file)
+naive.result <- evaluate_method("naive", naive.branches, naive.pseudotime, cell_params, params_file)
+random.result <- evaluate_method("random", random.branches, random.pseudotime, cell_params, params_file)
+all.results <- rbind(cheat.result, merlot.result, monocle.result, naive.result, random.result)
+```
+
+### Results and interpretation
+
+Let's look at the branch assignment scores first:
+
+```{r}
+all.results[,1:6]
+```
+As we can see, the "random" and the "naive" predictors have clearly worse scores than MERLoT and monocle. However, the scores are not as bad as we would think they are: the random predictor, for example, has a decent Rand index. This is because of the high number of TNs in the truth table: there are only ~50 cells in each branch, so the number of possible pairs that are in different branches is very high, and when assigning one of five branches randomly, chances are that most (about 4/5s) TN pairs will be placed in different clusters.
+
+The naive predictor has a suspiciously high F1 score. This is also easy to explain: since we predicted (almost) all cells in the same cluster, we will have a precision of around 1/5, but a recall (\(\frac{TP}{TP + FN}\)) of almost 1: we get the highest possible number of TPs because we predict all cells in the same branch to be in the same branch, and our FNs are really low, because there are (almost) no cells we predict to be in different clusters while they are in the same one in truth.
+
+Similar concerns can be expressed for the Fowkles-Mallows index, where the absence of TNs in the formula masks the bad performance of the naive and random predictors. In fact, the only index that fully reflects what we know to be true, namely that the random and the naive predictor are both bad, is the adjusted Mutual Information, which takes the number of clusters into account.
+
+```{r, warning=FALSE, include=FALSE}
+shortnames <- c("GK unweighted", "GK weighted", "Kendall unweighted", "Kendall weighted")
+colnames(all.results)[7:10] <- shortnames
+```
+
+Similar concerns can affect the pseudotime measures:
+```{r}
+all.results[, 7:10]
+```
+
+Notice how the Goodman-Kruskal score is perfect for the naive predictor; since the Goodman-Kruskal index doesn't take neutral pairs (pairs with same ordering in one of the input sequences) into account, the score is determined by the ordering of all the points with respect to the one point we set to pseudotime 2; it happened that this point had the highest pseudotime and so all other points (which have a pseudotime of 1 in the naive prediction) get full marks for being "ordered".
+
+Apart from that, all pseudotime indices correlate to a high degree, as our experience (and the MERLoT benchmark) suggest. This is not surprising, as they are based on the same idea, that of counting concordant and discordant pairs between two orderings.
+
+## Plotting
+
+In order to get a feeling for what these scores mean we can plot the predictions. We will create a flat (2D) representation of the lineage tree and the cells that are in the simulation and then color it according to the predictions.
+```{r, message=FALSE, warning=FALSE}
+offsets <- flat_simulation(cell_params, params_file, mode = "prosstt")
+par(mfrow=c(2,2))
+plot_flat_tree(cell_params, offsets, cheat.branches, plot_title = "cheat")
+plot_flat_tree(cell_params, offsets, random.branches, plot_title = "random")
+plot_flat_tree(cell_params, offsets, monocle.branches, plot_title = "monocle")
+plot_flat_tree(cell_params, offsets, merlot.branches, plot_title = "merlot")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
