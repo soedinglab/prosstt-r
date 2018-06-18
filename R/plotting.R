@@ -11,6 +11,8 @@
 #' @return a vector of the appropriate palette color for every number in x
 #'
 #' @export
+#'
+#' @importFrom grDevices hcl
 map2color <- function(x, pal, limits=NULL) {
   if(is.null(limits)) limits=range(x)
   pal[findInterval(x,seq(limits[1],limits[2],length.out=length(pal)+1), all.inside=TRUE)]
@@ -30,7 +32,7 @@ map2color <- function(x, pal, limits=NULL) {
 #' @export
 gg_color_hue <- function(n) {
   hues = seq(15, 375, length = n + 1)
-  hcl(h = hues, l = 65, c = 100)[1:n]
+  grDevices::hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
 #' Plots a simulation in 2D
@@ -51,6 +53,7 @@ gg_color_hue <- function(n) {
 #' @export
 #' @importFrom LSD distinctcolors
 #' @importFrom viridis viridis
+#' @importFrom graphics axis par plot points
 plot_flat_tree <- function(cell_params, branch_orientation, prediction, pcex=1,
                            plot_title = "", col_pal = NA, time_step = 50) {
   times <- cell_params$pseudotime

@@ -9,7 +9,7 @@ get_lpgk_indices(par_loc, cell_params)
 \arguments{
 \item{par_loc}{location of the PROSSTT parameter file}
 
-\item{cells_params}{a data frame that includes branch and pseudotime labels}
+\item{cell_params}{a data frame that includes branch and pseudotime labels}
 }
 \value{
 the indices of the cells on the longest path

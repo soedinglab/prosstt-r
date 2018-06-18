@@ -11,11 +11,11 @@ Author: Nikolaos Papadopoulos [aut, cre],
   Johannes Soeding [ths],
   Rodrigo Gonzalo Parra [ctb]
 Maintainer: Nikolaos Papadopoulos <npapado@mpibpc.mpg.de>
-Description: This package includes I/O, evaluation and plotting functions for
+Description: Includes I/O, evaluation and plotting functions for
     the assessment of trajectory inference algorithm performance in general and
     when using PROSSTT simulations in particular
-    (https://github.com/soedinglab/prosstt).
-License: GPL3
+    (<https://github.com/soedinglab/prosstt>).
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
@@ -24,5 +24,6 @@ Imports: igraph,
     readr,
     viridis,
     LSD
+Suggests: merlot
 URL: https://github.com/soedinglab/prosstt-r
 BugReports: https://github.com/soedinglab/prosstt-r/issues

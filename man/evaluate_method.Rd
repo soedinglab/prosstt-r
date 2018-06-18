@@ -4,7 +4,7 @@
 \alias{evaluate_method}
 \title{Evaluate a lineage tree prediction by all available methods}
 \usage{
-evaluate_method(method, mbranches, mtimes, cells_params, par_loc,
+evaluate_method(method, mbranches, mtimes, cell_params, par_loc,
   returnNA = FALSE)
 }
 \arguments{
@@ -14,7 +14,7 @@ evaluate_method(method, mbranches, mtimes, cells_params, par_loc,
 
 \item{mtimes}{the predicted pseudotime assignments}
 
-\item{cells_params}{a data frame that includes branch and pseudotime labels}
+\item{cell_params}{a data frame that includes branch and pseudotime labels}
 
 \item{par_loc}{location of the PROSSTT parameter file}
 

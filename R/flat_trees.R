@@ -114,11 +114,7 @@ branch_order <- function(x, zone, parents, branch_orientation) {
 #'
 #' @export
 #'
-#' @importFrom igraph graph_from_edgelist
-#' @importFrom igraph distances
-#' @importFrom igraph V
-#' @importFrom igraph bfs
-#' @importFrom igraph neighbors
+#' @importFrom igraph graph_from_edgelist distances V bfs neighbors
 flat_simulation <- function(cell_params, param_file, mode = "prosstt") {
   if (mode == "prosstt") {
     branches <- cell_params$branches + 1
