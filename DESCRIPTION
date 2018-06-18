@@ -1,12 +1,21 @@
 Package: prosstt
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Nikolaos Papadopoulos
+Date: 2018-06-18
+Title: Tools For The Evaluation Of PROSSTT Simulations
+Version: 1.0.0
+Authors@R: c(person("Nikolaos", "Papadopoulos", role = c("aut", "cre"),
+                     email = "npapado@mpibpc.mpg.de"),
+              person("Johannes", "Soeding", role = "ths"),
+              person("Rodrigo Gonzalo", "Parra", role = "ctb"))
+Author: Nikolaos Papadopoulos [aut, cre],
+  Johannes Soeding [ths],
+  Rodrigo Gonzalo Parra [ctb]
 Maintainer: Nikolaos Papadopoulos <npapado@mpibpc.mpg.de>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: This package includes I/O, evaluation and plotting functions for
+    the assessment of trajectory inference algorithm performance in general and
+    when using PROSSTT simulations in particular
+    (https://github.com/soedinglab/prosstt).
+License: GPL3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
@@ -15,3 +24,5 @@ Imports: igraph,
     readr,
     viridis,
     LSD
+URL: https://github.com/soedinglab/prosstt-r
+BugReports: https://github.com/soedinglab/prosstt-r/issues
