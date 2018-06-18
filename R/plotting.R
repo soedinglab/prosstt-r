@@ -49,6 +49,8 @@ gg_color_hue <- function(n) {
 #' @return None
 #'
 #' @export
+#' @importFrom LSD distinctcolors
+#' @importFrom viridis viridis
 plot_flat_tree <- function(cell_params, branch_orientation, prediction, pcex=1,
                            plot_title = "", col_pal = NA, time_step = 50) {
   times <- cell_params$pseudotime

@@ -64,6 +64,9 @@ evaluate_method <- function(method, mbranches, mtimes, cells_params, par_loc, re
 #' @return the indices of the cells on the longest path
 #'
 #' @export
+#'
+#' @importFrom igraph graph_from_adjacency_matrix
+#' @importFrom igraph shortest_paths
 get_lpgk_indices <- function(par_loc, cell_params) {
   cell_params$branches <- cell_params$branches + 1
   time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
@@ -136,6 +139,9 @@ read_write_output <- function(res, out) {
 #' @return a list of cell IDs, one for each terminal path
 #'
 #' @export
+#'
+#' @importFrom igraph graph_from_edgelist
+#' @importFrom igraph shortest_paths
 merlot_trajectories <- function(tree_name, job,  embed = TRUE) {
   cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   merlot <- readRDS(paste(job, tree_name, sep = ""))
@@ -184,6 +190,8 @@ merlot_trajectories <- function(tree_name, job,  embed = TRUE) {
 #' @return a list of cell IDs, one for each terminal path
 #'
 #' @export
+#'
+#' @importFrom igraph shortest_paths
 tscan_trajectories <- function(tree_name, job, embed=FALSE) {
   cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   tscanned <- readRDS(paste(job, tree_name, sep = ""))
@@ -222,6 +230,8 @@ tscan_trajectories <- function(tree_name, job, embed=FALSE) {
 #' @return a list of cell IDs, one for each terminal path
 #'
 #' @export
+#'
+#' @importFrom igraph shortest_paths
 monocle_trajectories <- function(tree_name, job, embed=FALSE) {
   cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   monocle2 <- readRDS(paste(job, tree_name, sep = ""))

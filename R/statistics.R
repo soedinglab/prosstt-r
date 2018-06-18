@@ -57,6 +57,8 @@ expected_mi <- function(s1, s2, l1, l2, n){    # expected mutual information
 #' @return the adjusted Mutual Information for the prediction/truth pair
 #'
 #' @export
+#'
+#' @importFrom infotheo mutinformation
 adjusted_mi <- function(prediction, truth){
   status <- assign_status(prediction, truth)
   if (all(status == 0)) {

@@ -6,6 +6,8 @@
 #' @param param_file location of the parameter file
 #'
 #' @return the simulation topology as a matrix
+#'
+#' @importFrom readr read_delim
 read_prosstt_topology <- function(param_file) {
   params <- readr::read_delim(param_file, ":", col_names = FALSE, trim_ws = TRUE)
   top_index <- which(params$X1 == "topology")
@@ -111,6 +113,12 @@ branch_order <- function(x, zone, parents, branch_orientation) {
 #' @return the start and end point of each branch in 2D
 #'
 #' @export
+#'
+#' @importFrom igraph graph_from_edgelist
+#' @importFrom igraph distances
+#' @importFrom igraph V
+#' @importFrom igraph bfs
+#' @importFrom igraph neighbors
 flat_simulation <- function(cell_params, param_file, mode = "prosstt") {
   if (mode == "prosstt") {
     branches <- cell_params$branches + 1
