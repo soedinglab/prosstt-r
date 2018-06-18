@@ -1,30 +1,27 @@
-library(infotheo)
-
+#' Evaluate a lineage tree prediction by all available methods
+#'
+#' Run all implemented methods for branch assignment and pseudotime prediction
+#' evaluation.
+#'
+#' @param method the name of the assessed trajectory inference algorithm
+#' @param mbranches the predicted branch assignments
+#' @param mtimes the predicted pseudotime assignments
+#' @param cells_params a data frame that includes branch and pseudotime labels
+#' @param par_loc location of the PROSSTT parameter file
+#' @param returnNA if set to TRUE will return an empty result matrix
+#'
+#' @return an one-row matrix with the evaluation results for all methods
+#'
+#' @export
 evaluate_method <- function(method, mbranches, mtimes, cells_params, par_loc, returnNA=FALSE) {
-
-  funclist <- list()
-  funclist[[1]] <- randInd_manual
-  funclist[[2]] <- matthews_cor
-  funclist[[3]] <- f_measure
-  funclist[[4]] <- jaccard
-  funclist[[5]] <- fowkles_mallows
-  funclist[[6]] <- adjusted_mi
-
-  timefuncs <- list()
-  timefuncs[[1]] <- goodman_kruskal_index
-  timefuncs[[2]] <- goodman_kruskal_index
-  timefuncs[[3]] <- kendall_index
-  timefuncs[[4]] <- kendall_index
-
   funcnames <- c("rand index", "matthews corr. coef.",
                  "F1 measure", "jaccard index", "fowkles-mallows index", "adjusted MI")
 
   timenames <- c("goodman-kruskall (unweighted)", "goodman-kruskall (weighted)",
                  "kendall index (unweighted)", "kendall index (weighted)")
 
-  res <- data.frame(matrix(NA, nrow = length(funcnames)+length(timenames)+2, ncol = 1))
-  rownames(res) <- c(funcnames, timenames, "LPGK", "#branches")
-
+  res <- data.frame(matrix(NA, nrow = length(funcnames)+length(timenames)+1, ncol = 1))
+  rownames(res) <- c(funcnames, timenames, "branches")
   colnames(res) <- method
   # print(res)
 
@@ -32,30 +29,41 @@ evaluate_method <- function(method, mbranches, mtimes, cells_params, par_loc, re
 
   mstatus <- assign_status(mbranches, cell_params$branches+1)
 
-  for (i in 1:length(funcnames)) {
-    res[i, 1] <- funclist[[i]](mbranches, cell_params$branches+1, mstatus)
-  }
-
-  ltimes <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
-  for (i in 1:length(timenames)) {
-    weighted <- (i %% 2 == 0)
-    res[length(funcnames)+i, 1] <- timefuncs[[i]](mtimes, ltimes, weighted=weighted)
-  }
+  res[1, 1] <- randInd_manual(mstatus)
+  res[2, 1] <- matthews_cor(mstatus)
+  res[3, 1] <- f_measure(mstatus)
+  res[4, 1] <- jaccard(mstatus)
+  res[5, 1] <- fowkles_mallows(mstatus)
+  res[6, 1] <- adjusted_mi(prediction = mbranches, truth = cell_params$branches+1)
 
   # longest path goodman kruskal:
-  lp_id = get_lpgk_indices(par_loc, cell_params)
-  lp_cells = rownames(cell_params)[lp_id]
-  ltimes = cell_params[lp_cells,]$pseudotime
-  mtimes = mtimes[lp_id]
-  res[length(funcnames) + length(timenames) + 1,] <- goodman_kruskal_index(mtimes, ltimes, weighted=FALSE)
+  lp_id <- get_lpgk_indices(par_loc, cell_params)
+  ltimes <- cell_params$pseudotime[lp_id]
+  mtimes <- mtimes[lp_id]
+
+  res[7, 1] <- goodman_kruskal_index(ltimes, mtimes, weighted=FALSE)
+  res[8, 1] <- goodman_kruskal_index(ltimes, mtimes, weighted=TRUE)
+  res[9, 1] <- kendall_index(ltimes, mtimes, weighted=FALSE)
+  res[10, 1] <- kendall_index(ltimes, mtimes, weighted=TRUE)
 
   # add number of predicted branches
   num_branches <- length(levels(as.factor(mbranches)))
-  res[length(funcnames) + length(timenames) + 2,] <- num_branches
+  res[length(funcnames) + length(timenames) + 1,] <- num_branches
 
   return(t(res))
 }
 
+#' Identifies the longest path in the simulation
+#'
+#' Finds the indices of the cells on the longest path in the simulated lineage
+#' tree.
+#'
+#' @param par_loc location of the PROSSTT parameter file
+#' @param cells_params a data frame that includes branch and pseudotime labels
+#'
+#' @return the indices of the cells on the longest path
+#'
+#' @export
 get_lpgk_indices <- function(par_loc, cell_params) {
   cell_params$branches = cell_params$branches + 1
   time = cell_params$pseudotime - min(cell_params$pseudotime) + 1
@@ -93,6 +101,18 @@ get_lpgk_indices <- function(par_loc, cell_params) {
   return(LongestPathCellsID)
 }
 
+#' Appends a result to a file
+#'
+#' Appends an one-row matrix to the end of a file with a matrix of the same
+#' column number (with same column names). Useful for benchmarking multiple
+#' methods and keeping all results in one file.
+#'
+#' @param res the result matrix (produced by `evaluate_method()`)
+#' @param out the location of the file to append to
+#'
+#' @return None
+#'
+#' @export
 read_write_output <- function(res, out) {
   if (!file.exists(out)) {
     write.table(res, out)
@@ -104,6 +124,18 @@ read_write_output <- function(res, out) {
   }
 }
 
+#' Finds all paths from the root to an endpoint for MERLoT
+#'
+#' Finds all paths that lead from the lineage tree root to an endpoint and the
+#' cells on them
+#' 
+#' @param tree_name suffix of the binary file that contains the predicted tree
+#' @param job location and prefix of the file that contains the predicted tree
+#' @param embed flag for MERLoT: embed tree or no
+#'
+#' @return a list of cell IDs, one for each terminal path
+#'
+#' @export
 merlot_trajectories <- function(tree_name, job,  embed = TRUE) {
   cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   merlot <- readRDS(paste(job, tree_name, sep = ""))
@@ -140,6 +172,18 @@ merlot_trajectories <- function(tree_name, job,  embed = TRUE) {
   res
 }
 
+#' Finds all paths from the root to an endpoint for TSCAN
+#'
+#' Finds all paths that lead from the lineage tree root to an endpoint and the
+#' cells on them
+#' 
+#' @param tree_name suffix of the binary file that contains the predicted tree
+#' @param job location and prefix of the file that contains the predicted tree
+#' @param embed flag for MERLoT: embed tree or no. Needed here for batch runs
+#'
+#' @return a list of cell IDs, one for each terminal path
+#'
+#' @export
 tscan_trajectories <- function(tree_name, job, embed=FALSE) {
   cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   tscanned <- readRDS(paste(job, tree_name, sep = ""))
@@ -166,6 +210,18 @@ tscan_trajectories <- function(tree_name, job, embed=FALSE) {
   res
 }
 
+#' Finds all paths from the root to an endpoint for Monocle
+#'
+#' Finds all paths that lead from the lineage tree root to an endpoint and the
+#' cells on them
+#' 
+#' @param tree_name suffix of the binary file that contains the predicted tree
+#' @param job location and prefix of the file that contains the predicted tree
+#' @param embed flag for MERLoT: embed tree or no. Needed here for batch runs
+#'
+#' @return a list of cell IDs, one for each terminal path
+#'
+#' @export
 monocle_trajectories <- function(tree_name, job, embed=FALSE) {
   cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   monocle2 <- readRDS(paste(job, tree_name, sep = ""))
@@ -193,6 +249,19 @@ monocle_trajectories <- function(tree_name, job, embed=FALSE) {
   res
 }
 
+#' Calculates truth table for cells in longest overlapping paths
+#'
+#' Finds the predicted trajectory with the largest overlap with the simulated
+#' longest path and then calculates a truth table for this prediction.
+#'
+#' @param tree_name suffix of the binary file that contains the predicted tree
+#' @param job location and prefix of the file that contains the predicted tree
+#' @param tool_function function to locate longest trajectory in prediction
+#' @param embed flag for MERLoT: embed tree or no. Needed here for batch runs
+#'
+#' @return (flat) truth table
+#'
+#' @export
 on_longest_path <- function(tree_name, job, tool_function, embed = FALSE) {
   par_loc <- paste(job, "params.txt", sep = "_")
 

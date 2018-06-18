@@ -199,6 +199,9 @@ cell_params &lt;- read.table(cell_params_file, sep = &quot;\t&quot;, header = TR
 exprs &lt;- t(as.matrix(simulation))
 data &lt;- newCellDataSet(exprs, expressionFamily = negbinomial(), lowerDetectionLimit = 1)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogZmVhdHVyZURhdGEgbXVzdCBjb250YWluIGEgY29sdW1uIHZlcmJhdGltIG5hbWVkICdnZW5lX3Nob3J0X25hbWUnIGZvciBjZXJ0YWluIGZ1bmN0aW9uc1dhcm5pbmc6IGZlYXR1cmVEYXRhIG11c3QgY29udGFpbiBhIGNvbHVtbiB2ZXJiYXRpbSBuYW1lZCAnZ2VuZV9zaG9ydF9uYW1lJyBmb3IgY2VydGFpbiBmdW5jdGlvbnNXYXJuaW5nOiBmZWF0dXJlRGF0YSBtdXN0IGNvbnRhaW4gYSBjb2x1bW4gdmVyYmF0aW0gbmFtZWQgJ2dlbmVfc2hvcnRfbmFtZScgZm9yIGNlcnRhaW4gZnVuY3Rpb25zXG4ifQ== -->
+<pre><code>Warning: featureData must contain a column verbatim named 'gene_short_name' for certain functionsWarning: featureData must contain a column verbatim named 'gene_short_name' for certain functionsWarning: featureData must contain a column verbatim named 'gene_short_name' for certain functions</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Next we have to perform some preprocessing steps:</p>
@@ -208,6 +211,10 @@ data &lt;- newCellDataSet(exprs, expressionFamily = negbinomial(), lowerDetectio
 <pre class="r"><code>data &lt;- estimateSizeFactors(data)
 data &lt;- estimateDispersions(data)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUmVtb3ZpbmcgMjUgb3V0bGllcnNcbk5hTnMgcHJvZHVjZWRzdGVwIHNpemUgdHJ1bmNhdGVkIGR1ZSB0byBkaXZlcmdlbmNlXG4ifQ== -->
+<pre><code>Removing 25 outliers
+NaNs producedstep size truncated due to divergence</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Monocle can now find the genes it considers important for the process…</p>
@@ -224,9 +231,19 @@ data &lt;- setOrderingFilter(data, ordering_genes)</code></pre>
 <p>…and then perform dimensionality reduction and infer a lineage tree.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSA8LSByZWR1Y2VEaW1lbnNpb24oZGF0YSwgbWF4X2NvbXBvbmVudHMgPSAzLCBhdXRvX3BhcmFtX3NlbGVjdGlvbiA9IFRSVUUpXG5kYXRhIDwtIG9yZGVyQ2VsbHMoZGF0YSwgcmV2ZXJzZT1GQUxTRSlcbmBgYCJ9 -->
-<pre class="r"><code>data &lt;- reduceDimension(data, max_components = 3, auto_param_selection = TRUE)
-data &lt;- orderCells(data, reverse=FALSE)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSA8LSByZWR1Y2VEaW1lbnNpb24oZGF0YSwgbWF4X2NvbXBvbmVudHMgPSAzLCBhdXRvX3BhcmFtX3NlbGVjdGlvbiA9IFRSVUUpXG5gYGAifQ== -->
+<pre class="r"><code>data &lt;- reduceDimension(data, max_components = 3, auto_param_selection = TRUE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRm91bmQgbW9yZSB0aGFuIG9uZSBjbGFzcyBcImRpc3RcIiBpbiBjYWNoZTsgdXNpbmcgdGhlIGZpcnN0LCBmcm9tIG5hbWVzcGFjZSAnQmlvY0dlbmVyaWNzJ1xuQWxzbyBkZWZpbmVkIGJ5IOKAmHNwYW3igJlcbkZvdW5kIG1vcmUgdGhhbiBvbmUgY2xhc3MgXCJkaXN0XCIgaW4gY2FjaGU7IHVzaW5nIHRoZSBmaXJzdCwgZnJvbSBuYW1lc3BhY2UgJ0Jpb2NHZW5lcmljcydcbkFsc28gZGVmaW5lZCBieSDigJhzcGFt4oCZXG5Gb3VuZCBtb3JlIHRoYW4gb25lIGNsYXNzIFwiZGlzdFwiIGluIGNhY2hlOyB1c2luZyB0aGUgZmlyc3QsIGZyb20gbmFtZXNwYWNlICdCaW9jR2VuZXJpY3MnXG5BbHNvIGRlZmluZWQgYnkg4oCYc3BhbeKAmVxuIn0= -->
+<pre><code>Found more than one class &quot;dist&quot; in cache; using the first, from namespace 'BiocGenerics'
+Also defined by ‘spam’
+Found more than one class &quot;dist&quot; in cache; using the first, from namespace 'BiocGenerics'
+Also defined by ‘spam’
+Found more than one class &quot;dist&quot; in cache; using the first, from namespace 'BiocGenerics'
+Also defined by ‘spam’</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSA8LSBvcmRlckNlbGxzKGRhdGEsIHJldmVyc2U9RkFMU0UpXG5gYGAifQ== -->
+<pre class="r"><code>data &lt;- orderCells(data, reverse=FALSE)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -256,12 +273,11 @@ monocle.pseudotime &lt;- pData(data)$Pseudotime</code></pre>
 <p>We will use MERLoT with diffusion maps produced by <a href="https://bioconductor.org/packages/release/bioc/html/destiny.html">destiny</a>. Both packages do not contain normalization routines, so we do a simple one manually:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmaXJzdCBub3JtYWxpemUgd2l0aCB0aGUgdG90YWwgbVJOQSBwZXIgY2VsbFxuc3VtMSA8LSBhcHBseShzaW11bGF0aW9uLCAxLCBzdW0pXG5zY2FsaW5ncyA8LSBzdW0xL21lYW4oc3VtMSlcblggPC0gKDEvc2NhbGluZ3MpKnNpbXVsYXRpb25cblxuIyB3b3JraW5nIHdpdGggbG9nLXRyYW5zZm9ybWVkIGRhdGEgaXMgYmV0dGVyIGZvciBkZXN0aW55XG5YIDwtIGxvZyhYICsgMSlcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmaXJzdCBub3JtYWxpemUgd2l0aCB0aGUgdG90YWwgbVJOQSBwZXIgY2VsbFxuc3VtMSA8LSBhcHBseShzaW11bGF0aW9uLCAxLCBzdW0pXG5zY2FsaW5ncyA8LSBzdW0xL21lYW4oc3VtMSlcblggPC0gKDEvc2NhbGluZ3MpKnNpbXVsYXRpb25cbiMgd29ya2luZyB3aXRoIGxvZy10cmFuc2Zvcm1lZCBkYXRhIGlzIGJldHRlciBmb3IgZGVzdGlueVxuWCA8LSBsb2coWCArIDEpXG5gYGAifQ== -->
 <pre class="r"><code># first normalize with the total mRNA per cell
 sum1 &lt;- apply(simulation, 1, sum)
 scalings &lt;- sum1/mean(sum1)
 X &lt;- (1/scalings)*simulation
-
 # working with log-transformed data is better for destiny
 X &lt;- log(X + 1)</code></pre>
 <!-- rnb-source-end -->
@@ -280,32 +296,180 @@ cell_coordinates &lt;- dm@eigenvectors[,1:3]</code></pre>
 <p>Now we can use MERLoT - calculate the scaffold tree, derive the elastic tree from it and then embed the elastic tree in the original expression space:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2NhZmZvbGQgPC0gQ2FsY3VsYXRlU2NhZmZvbGRUcmVlKGNlbGxfY29vcmRpbmF0ZXMpXG5lbGFzdGljIDwtIENhbGN1bGF0ZUVsYXN0aWNUcmVlKHNjYWZmb2xkKVxuZW1iZWRkZWQgPC0gR2VuZXNTcGFjZUVtYmVkZGluZyhFeHByZXNzaW9uTWF0cml4ID0gWCwgRWxhc3RpY1RyZWUgPSBlbGFzdGljKVxuYGBgIn0= -->
-<pre class="r"><code>scaffold &lt;- CalculateScaffoldTree(cell_coordinates)
-elastic &lt;- CalculateElasticTree(scaffold)
-embedded &lt;- GenesSpaceEmbedding(ExpressionMatrix = X, ElasticTree = elastic)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2NhZmZvbGQgPC0gQ2FsY3VsYXRlU2NhZmZvbGRUcmVlKGNlbGxfY29vcmRpbmF0ZXMpXG5gYGAifQ== -->
+<pre class="r"><code>scaffold &lt;- CalculateScaffoldTree(cell_coordinates)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGVkIFRyZWUgVG9wb2xvZ3kgTGlicmFyeS4uLlxuRGF0YSBEaW1lbnNpb25zICgyNTAsIDMpXG5DYWxjdWxhdGluZyBkaXN0YW5jZXMuLi5cbkNhbGN1bGF0aW5nIFNjYWZmb2xkIFRyZWUuLi5cbkVuZHBvaW50czogNCAxNDEgMjI4IDEzMyAyMjlcbkJyYW5jaHBvaW50czogMiAyNiAxMzJcblRyZWVfQnJhbmNoIDEzMyAxMzJcblRyZWVfQnJhbmNoIDE0MSAxMzJcblRyZWVfQnJhbmNoIDEzMiAyNlxuVHJlZV9CcmFuY2ggMjI4IDI2XG5UcmVlX0JyYW5jaCAyMjkgMjZcbkZpbmlzaGVkIFNjYWZmb2xkIFRyZWUuLi4gMi4xNzc2NDE4Njg1OTEzMDg2IHNlY29uZHNcbiJ9 -->
+<pre><code>Loaded Tree Topology Library...
+Data Dimensions (250, 3)
+Calculating distances...
+Calculating Scaffold Tree...
+Endpoints: 4 141 228 133 229
+Branchpoints: 2 26 132
+Tree_Branch 133 132
+Tree_Branch 141 132
+Tree_Branch 132 26
+Tree_Branch 228 26
+Tree_Branch 229 26
+Finished Scaffold Tree... 2.1776418685913086 seconds</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZWxhc3RpYyA8LSBDYWxjdWxhdGVFbGFzdGljVHJlZShzY2FmZm9sZClcbmBgYCJ9 -->
+<pre class="r"><code>elastic &lt;- CalculateElasticTree(scaffold)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ29uc3RydWN0aW5nIGN1cnZlIDEgb2YgMSAvIFN1YnNldCAxIG9mIDFcIlxuWzFdIFwiQ29tcHV0aW5nIEVQRyB3aXRoIDEwMCBub2RlcyBvbiAyNTAgcG9pbnRzIGFuZCAzIGRpbWVuc2lvbnNcIlxuWzFdIFwiVXNpbmcgYSBzaW5nbGUgY29yZVwiXG5Ob2RlcyA9IDExIDEyIDEzIDE0IDE1IDE2IDE3IDE4IDE5IDIwIDIxIDIyIDIzIDI0IDI1IDI2IDI3IDI4IDI5IDMwIDMxIDMyIDMzIDM0IDM1IDM2IDM3IDM4IDM5IDQwIDQxIDQyIDQzIDQ0IDQ1IDQ2IDQ3IDQ4IDQ5IDUwIDUxIDUyIDUzIDU0IDU1IDU2IDU3IDU4IDU5IDYwIDYxIDYyIDYzIDY0IDY1IDY2IDY3IDY4IDY5IDcwIDcxIDcyIDczIDc0IDc1IDc2IDc3IDc4IDc5IDgwIDgxIDgyIDgzIDg0IDg1IDg2IDg3IDg4IDg5IDkwIDkxIDkyIDkzIDk0IDk1IDk2IDk3IDk4IDk5IFxuQkFSQ09ERVx0RU5FUkdZXHROTk9ERVNcdE5FREdFU1x0TlJJQlNcdE5TVEFSU1x0TlJBWVNcdE5SQVlTMlx0TVNFXHRNU0VQXHRGVkVcdEZWRVBcdFVFXHRVUlx0VVJOXHRVUk4yXHRVUlNEXG4yfHwxMDBcdDAuMDAwMTM3N1x0MTAwXHQ5OVx0OTRcdDJcdDBcdDBcdDAuMDAwMTE2OFx0MC4wMDAxMTE3XHQwLjk5MDNcdDAuOTkwN1x0Ni4xMTRlLTA2XHQxLjQ4MmUtMDVcdDAuMDAxNDgyXHQwLjE0ODJcdDBcbjQxLjk4NyBzZWMgZWxhcHNlZFxuIn0= -->
+<pre><code>[1] &quot;Constructing curve 1 of 1 / Subset 1 of 1&quot;
+[1] &quot;Computing EPG with 100 nodes on 250 points and 3 dimensions&quot;
+[1] &quot;Using a single core&quot;
+Nodes = 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 
+BARCODE ENERGY  NNODES  NEDGES  NRIBS   NSTARS  NRAYS   NRAYS2  MSE MSEP    FVE FVEP    UE  UR  URN URN2    URSD
+2||100  0.0001377   100 99  94  2   0   0   0.0001168   0.0001117   0.9903  0.9907  6.114e-06   1.482e-05   0.001482    0.1482  0
+41.987 sec elapsed</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZW1iZWRkZWQgPC0gR2VuZXNTcGFjZUVtYmVkZGluZyhFeHByZXNzaW9uTWF0cml4ID0gWCwgRWxhc3RpY1RyZWUgPSBlbGFzdGljKVxuYGBgIn0= -->
+<pre class="r"><code>embedded &lt;- GenesSpaceEmbedding(ExpressionMatrix = X, ElasticTree = elastic)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ29uc3RydWN0aW5nIGN1cnZlIDEgb2YgMSAvIFN1YnNldCAxIG9mIDFcIlxuWzFdIFwiQ29tcHV0aW5nIEVQRyB3aXRoIDEwMCBub2RlcyBvbiAyNTAgcG9pbnRzIGFuZCA4NjcgZGltZW5zaW9uc1wiXG5CQVJDT0RFXHRFTkVSR1lcdE5OT0RFU1x0TkVER0VTXHROUklCU1x0TlNUQVJTXHROUkFZU1x0TlJBWVMyXHRNU0VcdE1TRVBcdEZWRVx0RlZFUFx0VUVcdFVSXHRVUk5cdFVSTjJcdFVSU0RcblsxXSBcIlVzaW5nIGEgc2luZ2xlIGNvcmVcIlxuMS4wODQgc2VjIGVsYXBzZWRcbiJ9 -->
+<pre><code>[1] &quot;Constructing curve 1 of 1 / Subset 1 of 1&quot;
+[1] &quot;Computing EPG with 100 nodes on 250 points and 867 dimensions&quot;
+BARCODE ENERGY  NNODES  NEDGES  NRIBS   NSTARS  NRAYS   NRAYS2  MSE MSEP    FVE FVEP    UE  UR  URN URN2    URSD
+[1] &quot;Using a single core&quot;
+1.084 sec elapsed</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Now we can calculate pseudotimes from the starting cell we determined before, and so retrieve branch and pseudotime assignments.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVybG90LnByZWRpY3Rpb24gPC0gQ2FsY3VsYXRlUHNldWRvdGltZXMoZW1iZWRkZWQsIEMwID0gc3RhcnQpXG5tZXJsb3QuYnJhbmNoZXMgPC0gbWVybG90LnByZWRpY3Rpb24kQ2VsbHMyQnJhbmNoZXNcbm1lcmxvdC5wc2V1ZG90aW1lIDwtIG1lcmxvdC5wcmVkaWN0aW9uJFRpbWVzX2NlbGxzXG5gYGAifQ== -->
+<pre class="r"><code>merlot.prediction &lt;- CalculatePseudotimes(embedded, C0 = start)
+merlot.branches &lt;- merlot.prediction$Cells2Branches
+merlot.pseudotime &lt;- merlot.prediction$Times_cells</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="naive-predictor-and-cheat-predictor" class="section level2">
+<h2>Naive predictor and cheat predictor</h2>
+<p>In order to have something bad and good to compare against, we will make a naive predictor (who assigns branches and pseudotimes randomly) and a cheating predictor, who copies the true branch and pseudotime assignments:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTiA8LSBkaW0oc2ltdWxhdGlvbilbMV0gIyB0b3RhbCBudW1iZXIgb2YgY2VsbHNcbm5haXZlLmJyYW5jaGVzIDwtIHNhbXBsZSgxOjUsIE4sIHJlcGxhY2UgPSBUUlVFKVxubmFpdmUucHNldWRvdGltZSA8LSBzYW1wbGUoMToxNTAsIE4sIHJlcGxhY2UgPSBUUlVFKVxuY2hlYXQuYnJhbmNoZXMgPC0gY2VsbF9wYXJhbXMkYnJhbmNoZXNcbmNoZWF0LnBzZXVkb3RpbWUgPC0gY2VsbF9wYXJhbXMkcHNldWRvdGltZVxuYGBgIn0= -->
+<pre class="r"><code>N &lt;- dim(simulation)[1] # total number of cells
+naive.branches &lt;- sample(1:5, N, replace = TRUE)
+naive.pseudotime &lt;- sample(1:150, N, replace = TRUE)
+cheat.branches &lt;- cell_params$branches
+cheat.pseudotime &lt;- cell_params$pseudotime</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="evaluation" class="section level2">
 <h2>Evaluation</h2>
-<p>Now we can calculate</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShwcm9zc3R0KVxuYGBgIn0= -->
+<pre class="r"><code>library(prosstt)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>There is, to the best of our knowledge, no measure to assess branch assignment and pseudotime prediction at the same time, so we treat them as separate problems.</p>
+<div id="branch-assignment" class="section level3">
+<h3>Branch assignment</h3>
+<p>Branch assignment can be viewed as a clustering problem, where the branch identity of each cell in the simulation is its true cluster identity. Comparing pairs of points then defines a truth table:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUUDogcGFpciBvZiBwb2ludHMgaW4gc2FtZSBjbHVzdGVyIGluIHByZWRpY3Rpb24sIHRydXRoXG4jIFROOiBwYWlyIG9mIHBvaW50cyBpbiBkaWZmLiBjbHVzdGVyIGluIHByZWRpY3Rpb24sIHRydXRoXG4jIEZOOiBwYWlyIG9mIHBvaW50cyBpbiBkaWZmLiBjbHVzdGVyIGluIHByZWRpY3Rpb24sIHNhbWUgaW4gdHJ1dGhcbiMgRlA6IHBhaXIgb2YgcG9pbnRzIGluIHNhbWUgY2x1c3RlciBpbiBwcmVkaWN0aW9uLCBkaWZmLiBpbiB0cnV0aFxuIyB3aGVuIHRoZXJlIGFyZSBOQSB2YWx1ZXMgaW4gdGhlIHByZWRpY3Rpb25zOlxuIyBOQXMgYXJlIGNvbnNpZGVyZWQgRk5zXG5tb25vY2xlLnRhYmxlIDwtIGFzc2lnbl9zdGF0dXMocHJlZGljdGlvbiA9IG1vbm9jbGUuYnJhbmNoZXMsIHRydXRoID0gY2VsbF9wYXJhbXMkYnJhbmNoZXMpXG5gYGAifQ== -->
+<pre class="r"><code># TP: pair of points in same cluster in prediction, truth
+# TN: pair of points in diff. cluster in prediction, truth
+# FN: pair of points in diff. cluster in prediction, same in truth
+# FP: pair of points in same cluster in prediction, diff. in truth
+# when there are NA values in the predictions:
+# NAs are considered FNs
+monocle.table &lt;- assign_status(prediction = monocle.branches, truth = cell_params$branches)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>This unlocks all <a href="https://en.wikipedia.org/wiki/Cluster_analysis#External_evaluation">external evaluation</a> measures that are based on truth tables. Five of these are implemented here (unweighted Rand Index, Matthews Correlation Coefficient, F measure, Jaccard Index, and Fowkles-Mallows Index).</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWF0dGhld3NfY29yKG1vbm9jbGUudGFibGUpXG5gYGAifQ== -->
+<pre class="r"><code>matthews_cor(monocle.table)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>While all the aforementioned indices and measures are well established, we feel they may be suboptimal performance indicators for the problem at hand, since they don’t take cluster structure into consideration. In their place we suggest the adjusted Mutual Information, a normalization of Mutual Information which assumes a hypergeometric background distribution (for more details and some justification, please refer to the supplemental material of the PROSSTT paper).</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWRqdXN0ZWRfbWkocHJlZGljdGlvbiA9IG1vbm9jbGUuYnJhbmNoZXMsIHRydXRoID0gY2VsbF9wYXJhbXMkYnJhbmNoZXMpXG5gYGAifQ== -->
+<pre class="r"><code>adjusted_mi(prediction = monocle.branches, truth = cell_params$branches)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="pseudotime-prediction" class="section level3">
+<h3>Pseudotime prediction</h3>
+<p>Pseudotime quantifies progress through the process; developmental time. Since it is not directly translatable to wall time, its absolute value is not important. Rather, it is important that cells are ordered correctly, and cells from different developmental stages are not mixed together in the lineage tree reconstruction. Therefore assessing pseudotime predictions consists of comparing ordered sequences; the ordering of cells that stems from the labeled pseudotime and the ordering from the predicted pseudotime.</p>
+<p>Similar to previously, one can compare the relative ordering of all pairs of cells in the annotation and the prediction, in order to calculate the (unweighted) Goodman-Kruskal and (unweighted) Kendall indices. It is easy to extend these indices to take into account the pseudotime distance between the cells.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ29vZG1hbl9rcnVza2FsX2luZGV4KGNlbGxfcGFyYW1zJHBzZXVkb3RpbWUsIG1lcmxvdC5wc2V1ZG90aW1lLCB3ZWlnaHRlZCA9IEZBTFNFKVxuYGBgIn0= -->
+<pre class="r"><code>goodman_kruskal_index(cell_params$pseudotime, merlot.pseudotime, weighted = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Both indices have symmetric formulas, so the order of the arguments is not important. Our experience has shown that all four indices correlate very well with each other.</p>
+<p>However there is another concern when it comes to pseudotime; pseudotime only establishes a partial ordering on cells and no absolute time. Therefore, cells on branches not passed through one after the other cannot be compared. In order to circumvent this problem, we find the longest path in the tree (from the root to a leaf) and compare the predicted pseudotime with the simulated one for the cells on this path.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9uZ2VzdF9wYXRoIDwtIGdldF9scGdrX2luZGljZXMocGFyYW1zX2ZpbGUsIGNlbGxfcGFyYW1zKVxudHJ1ZV90aW1lcyA8LSBjZWxsX3BhcmFtcyRwc2V1ZG90aW1lW2xvbmdlc3RfcGF0aF1cbm1lcmxvdC5sb25nZXN0X3BhdGggPC0gbWVybG90LnBzZXVkb3RpbWVbbG9uZ2VzdF9wYXRoXVxuYGBgIn0= -->
+<pre class="r"><code>longest_path &lt;- get_lpgk_indices(params_file, cell_params)
+true_times &lt;- cell_params$pseudotime[longest_path]
+merlot.longest_path &lt;- merlot.pseudotime[longest_path]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>It is then valid to calculate one of the indices on this subset of the lineage tree:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ29vZG1hbl9rcnVza2FsX2luZGV4KHRydWVfdGltZXMsIG1lcmxvdC5sb25nZXN0X3BhdGgsIHdlaWdodGVkID0gRkFMU0UpXG5gYGAifQ== -->
+<pre class="r"><code>goodman_kruskal_index(true_times, merlot.longest_path, weighted = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In order to do everything at once:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9ub2NsZS5yZXN1bHQgPC0gZXZhbHVhdGVfbWV0aG9kKFwibW9ub2NsZVwiLCBtb25vY2xlLmJyYW5jaGVzLCBtb25vY2xlLnBzZXVkb3RpbWUsIGNlbGxfcGFyYW1zLCBwYXJhbXNfZmlsZSlcbm1lcmxvdC5yZXN1bHQgPC0gZXZhbHVhdGVfbWV0aG9kKFwibWVybG90XCIsIG1lcmxvdC5icmFuY2hlcywgbWVybG90LnBzZXVkb3RpbWUsIGNlbGxfcGFyYW1zLCBwYXJhbXNfZmlsZSlcbm5haXZlLnJlc3VsdCA8LSBldmFsdWF0ZV9tZXRob2QoXCJuYWl2ZVwiLCBuYWl2ZS5icmFuY2hlcywgbmFpdmUucHNldWRvdGltZSwgY2VsbF9wYXJhbXMsIHBhcmFtc19maWxlKVxuY2hlYXQucmVzdWx0IDwtIGV2YWx1YXRlX21ldGhvZChcImNoZWF0XCIsIGNoZWF0LmJyYW5jaGVzLCBjaGVhdC5wc2V1ZG90aW1lLCBjZWxsX3BhcmFtcywgcGFyYW1zX2ZpbGUpXG5hbGwucmVzdWx0cyA8LSByYmluZChtb25vY2xlLnJlc3VsdCwgbWVybG90LnJlc3VsdCwgbmFpdmUucmVzdWx0LCBjaGVhdC5yZXN1bHQpXG5hbGwucmVzdWx0c1xuYGBgIn0= -->
+<pre class="r"><code>monocle.result &lt;- evaluate_method(&quot;monocle&quot;, monocle.branches, monocle.pseudotime, cell_params, params_file)
+merlot.result &lt;- evaluate_method(&quot;merlot&quot;, merlot.branches, merlot.pseudotime, cell_params, params_file)
+naive.result &lt;- evaluate_method(&quot;naive&quot;, naive.branches, naive.pseudotime, cell_params, params_file)
+cheat.result &lt;- evaluate_method(&quot;cheat&quot;, cheat.branches, cheat.pseudotime, cell_params, params_file)
+all.results &lt;- rbind(monocle.result, merlot.result, naive.result, cheat.result)
+all.results</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="plotting" class="section level2">
+<h2>Plotting</h2>
+<p>In order to get a feeling for what these scores mean we can plot the predictions. We will create a flat (2D) representation of the lineage tree and the cells that are in the simulation and then color it according to the predictions.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub2Zmc2V0cyA8LSBmbGF0X3NpbXVsYXRpb24oY2VsbF9wYXJhbXMsIHBhcmFtc19maWxlLCBtb2RlID0gXCJwcm9zc3R0XCIpXG5wYXIobWZyb3c9YygyLDIpKVxucGxvdF9mbGF0X3RyZWUoY2VsbF9wYXJhbXMsIG9mZnNldHMsIGNoZWF0LmJyYW5jaGVzLCBwbG90X3RpdGxlID0gXCJjaGVhdFwiKVxucGxvdF9mbGF0X3RyZWUoY2VsbF9wYXJhbXMsIG9mZnNldHMsIG5haXZlLmJyYW5jaGVzLCBwbG90X3RpdGxlID0gXCJuYWl2ZVwiKVxucGxvdF9mbGF0X3RyZWUoY2VsbF9wYXJhbXMsIG9mZnNldHMsIG1vbm9jbGUuYnJhbmNoZXMsIHBsb3RfdGl0bGUgPSBcIm1vbm9jbGVcIilcbnBsb3RfZmxhdF90cmVlKGNlbGxfcGFyYW1zLCBvZmZzZXRzLCBtZXJsb3QuYnJhbmNoZXMsIHBsb3RfdGl0bGUgPSBcIm1lcmxvdFwiKVxuYGBgIn0= -->
+<pre class="r"><code>offsets &lt;- flat_simulation(cell_params, params_file, mode = &quot;prosstt&quot;)
+par(mfrow=c(2,2))
+plot_flat_tree(cell_params, offsets, cheat.branches, plot_title = &quot;cheat&quot;)
+plot_flat_tree(cell_params, offsets, naive.branches, plot_title = &quot;naive&quot;)
+plot_flat_tree(cell_params, offsets, monocle.branches, plot_title = &quot;monocle&quot;)
+plot_flat_tree(cell_params, offsets, merlot.branches, plot_title = &quot;merlot&quot;)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXZhbHVhdGluZyBwcmVkaWN0aW9ucyBvbiBgUFJPU1NUVGAgc2ltdWxhdGlvbnMiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KClRoZSBbYFBST1NTVFRgXShodHRwczovL2dpdGh1Yi5jb20vc29lZGluZ2xhYi9wcm9zc3R0KSBzdWl0ZSBzaW11bGF0ZXMgc2luZ2xlLWNlbGwgUk5BLXNlcSBjb3VudCBkYXRhIGZvciBjb21wbGV4IGRpZmZlcmVudGlhdGlvbiB0b3BvbG9naWVzLiBUaGlzIFIgcmVwb3NpdG9yeSBjb250YWlucyBhbGwgdGhlIG5lY2Vzc2FyeSBjb2RlIHRvIGV2YWx1YXRlIHByZWRpY3Rpb25zIG1hZGUgb24gc3VjaCBkYXRhc2V0cy4gV2l0aCBQUk9TU1RUIHNpbXVsYXRpb25zIGFuZCB0aGUgZXZhbHVhdGlvbiBjb2RlIGl0IGlzIGVhc3kgdG8gYnVpbGQgY29tcHJlaGVuc2l2ZSBiZW5jaG1hcmsgcGlwZWxpbmVzLCBsaWtlIGluIHRoZSBbYE1FUkxvVGBdKGh0dHBzOi8vZ2l0aHViLmNvbS9zb2VkaW5nbGFiL3Byb3NzdHQpIGJlbmNobWFyay4KCldlIHN0YXJ0IHdpdGggcmVhZGluZyB0aGUgc2ltdWxhdGlvbiBmaWxlcy4gSW4gb3JkZXIgdG8gcHJvZHVjZSBhIHByZWRpY3Rpb24gd2UgbmVlZCB0aGUgc2ltdWxhdGlvbiBpdHNlbGYsIGFuZCBpbiBvcmRlciB0byBldmFsdWF0ZSBpdCB3ZSBuZWVkIGl0cyBwYXJhbWV0ZXIgZmlsZXMuIEhlcmUgd2Ugd2lsbCBiZSB1c2luZyBhIHByZXBhY2thZ2VkIGV4YW1wbGU6IAoKYGBge3J9CiMgZmluZCB0aGUgZmlsZXMKc2ltX2ZpbGUgPC0gc3lzdGVtLmZpbGUoImV4YW1wbGUvc2ltdWxhdGlvbnMiLCAic2ltNDZfc2ltdWxhdGlvbi50eHQiLCBwYWNrYWdlID0gInByb3NzdHQiKQpjZWxsX3BhcmFtc19maWxlIDwtIHN5c3RlbS5maWxlKCJleGFtcGxlL3NpbXVsYXRpb25zIiwgInNpbTQ2X2NlbGxwYXJhbXMudHh0IiwgcGFja2FnZSA9ICJwcm9zc3R0IikKcGFyYW1zX2ZpbGUgPC0gc3lzdGVtLmZpbGUoImV4YW1wbGUvc2ltdWxhdGlvbnMiLCAic2ltNDZfcGFyYW1zLnR4dCIsIHBhY2thZ2UgPSAicHJvc3N0dCIpCgojIHJlYWQgdGhlbQpzaW11bGF0aW9uIDwtIHJlYWQudGFibGUoc2ltX2ZpbGUsIHNlcCA9ICJcdCIsIGhlYWRlciA9IFRSVUUsIHJvdy5uYW1lcyA9IDEpCmNlbGxfcGFyYW1zIDwtIHJlYWQudGFibGUoY2VsbF9wYXJhbXNfZmlsZSwgc2VwID0gIlx0IiwgaGVhZGVyID0gVFJVRSwgcm93Lm5hbWVzID0gMSkKYGBgCgpOb3cgaXQgaXMgdGltZSB0byBwcmVwcm9jZXNzIHRoZSBkYXRhIGFuZCBtYWtlIHByZWRpY3Rpb25zLiBGb3IgZGVtb25zdHJhdGlvbiBwdXJwb3NlcyB3ZSB3aWxsIGJlIHVzaW5nIFtNb25vY2xlIDJdKGh0dHA6Ly9jb2xlLXRyYXBuZWxsLWxhYi5naXRodWIuaW8vbW9ub2NsZS1yZWxlYXNlLykgYW5kIE1FUkxvVC4gSWYgeW91IGFscmVhZHkga25vdyBob3cgdG8gZ2V0IGJyYW5jaCBhbmQgcHNldWRvdGltZSBhc3NpZ25tZW50cyBmcm9tIHlvdXIgbWV0aG9kIHlvdSBjYW4gc2tpcCB0aGUgZm9sbG93aW5nIHNlY3Rpb25zIGFuZCBnbyBkaXJlY3RseSB0byB0aGUgW2V2YWx1YXRpb25dKCNldmFsdWF0aW9uKS4KCiMjIFRyYWplY3RvcnkgaW5mZXJlbmNlOiBNb25vY2xlIDIgeyNtb25vY2xlfQoKTG9hZCBtb25vY2xlIGFuZCBmb3JtYXQgdGhlIHNpbXVsYXRpb24gYXMgYSBDZWxsRGF0YVNldCBvYmplY3QuCmBgYHtyfQpsaWJyYXJ5KG1vbm9jbGUpCmV4cHJzIDwtIHQoYXMubWF0cml4KHNpbXVsYXRpb24pKQpkYXRhIDwtIG5ld0NlbGxEYXRhU2V0KGV4cHJzLCBleHByZXNzaW9uRmFtaWx5ID0gbmVnYmlub21pYWwoKSwgbG93ZXJEZXRlY3Rpb25MaW1pdCA9IDEpCmBgYAoKTmV4dCB3ZSBoYXZlIHRvIHBlcmZvcm0gc29tZSBwcmVwcm9jZXNzaW5nIHN0ZXBzOgpgYGB7cn0KZGF0YSA8LSBlc3RpbWF0ZVNpemVGYWN0b3JzKGRhdGEpCmRhdGEgPC0gZXN0aW1hdGVEaXNwZXJzaW9ucyhkYXRhKQpgYGAKCk1vbm9jbGUgY2FuIG5vdyBmaW5kIHRoZSBnZW5lcyBpdCBjb25zaWRlcnMgaW1wb3J0YW50IGZvciB0aGUgcHJvY2Vzcy4uLgpgYGB7cn0KZGF0YSA8LSBkZXRlY3RHZW5lcyhkYXRhLCBtaW5fZXhwcj0wLjEpCmRpc3BfdGFibGUgPC0gZGlzcGVyc2lvblRhYmxlKGRhdGEpCm9yZGVyaW5nX2dlbmVzIDwtIHN1YnNldChkaXNwX3RhYmxlLCBtZWFuX2V4cHJlc3Npb24gPj0gMC41ICYgZGlzcGVyc2lvbl9lbXBpcmljYWwgPj0gMipkaXNwZXJzaW9uX2ZpdCkkZ2VuZV9pZApkYXRhIDwtIHNldE9yZGVyaW5nRmlsdGVyKGRhdGEsIG9yZGVyaW5nX2dlbmVzKQpgYGAKCi4uLmFuZCB0aGVuIHBlcmZvcm0gZGltZW5zaW9uYWxpdHkgcmVkdWN0aW9uIGFuZCBpbmZlciBhIGxpbmVhZ2UgdHJlZS4KYGBge3J9CmRhdGEgPC0gcmVkdWNlRGltZW5zaW9uKGRhdGEsIG1heF9jb21wb25lbnRzID0gMywgYXV0b19wYXJhbV9zZWxlY3Rpb24gPSBUUlVFKQpkYXRhIDwtIG9yZGVyQ2VsbHMoZGF0YSwgcmV2ZXJzZT1GQUxTRSkKYGBgCgpCZWZvcmUgd2UgcmV0cmlldmUgTW9ub2NsZSdzIHByZWRpY3Rpb24gdGhvdWdoLCB3ZSBtdXN0IG1ha2Ugc3VyZSBpdCBzdGFydHMgbWVhc3VyaW5nIGl0cyBwc2V1ZG90aW1lIGZyb20gdGhlIGNvcnJlY3QgcG9pbnQuIFNpbmNlIE1vbm9jbGUgY2FuIG9ubHkgcGxhY2UgdGhlIHN0YXJ0aW5nIHBvaW50IG9mIHBzZXVkb3RpbWUgY2FsY3VsYXRpb24gYXQgYW4gZW5kcG9pbnQsIHdlIGhhdmUgdG8gZmluZCB0aGUgYnJhbmNoIGl0IHNob3VsZCBzdGFydCBmcm9tLiBUaGlzIGNhbiBiZSBkb25lIGluIGFuIGFyYml0cmFyaWx5IGNvbXBsaWNhdGVkIHdheTsgaGVyZSB3ZSB3aWxsIGxvb2sgaWYgYSBjZWxsIHdpdGggbWluaW11bSBwc2V1ZG90aW1lIGlzIGluIGFuIG91dGVyIGJyYW5jaCBhbmQgc2VsZWN0IHRoYXQgYnJhbmNoIGFzIHRoZSBzdGFydGluZyBvbmUuCmBgYHtyfQp0aW1lIDwtIGNlbGxfcGFyYW1zJHBzZXVkb3RpbWUgLSBtaW4oY2VsbF9wYXJhbXMkcHNldWRvdGltZSkgKyAxCnN0YXJ0IDwtIG1pbih3aGljaCh0aW1lID09IG1pbih0aW1lKSkpICMgdGhlcmUgbWF5IGJlIG1vcmUgdGhhbiBvbmU7IGluIHRoaXMgY2FzZSBqdXN0IHBpY2sgdGhlIGZpcnN0LgpzdGFydF9icmFuY2ggPC0gcERhdGEoZGF0YSkkU3RhdGVbc3RhcnRdCmBgYAoKTm93IGxldCBNb25vY2xlIGRvIHRoZSBhc3NpZ25tZW50cyBhZ2Fpbi4gVGhpcyB0aW1lIHdlIGNhbiByZXRyaWV2ZSB0aGUgcHJlZGljdGlvbnM6CmBgYHtyfQpkYXRhIDwtIG9yZGVyQ2VsbHMoZGF0YSwgcm9vdF9zdGF0ZSA9IHN0YXJ0X2JyYW5jaCkKbW9ub2NsZS5icmFuY2hlcyA8LSBwRGF0YShkYXRhKSRTdGF0ZQptb25vY2xlLnBzZXVkb3RpbWUgPC0gcERhdGEoZGF0YSkkUHNldWRvdGltZQpgYGAKCiMjIE1FUkxvVCArIGRlc3RpbnkgeyNtZXJsb3R9CgpXZSB3aWxsIHVzZSBNRVJMb1Qgd2l0aCBkaWZmdXNpb24gbWFwcyBwcm9kdWNlZCBieSBbZGVzdGlueV0oaHR0cHM6Ly9iaW9jb25kdWN0b3Iub3JnL3BhY2thZ2VzL3JlbGVhc2UvYmlvYy9odG1sL2Rlc3RpbnkuaHRtbCkuIEJvdGggcGFja2FnZXMgZG8gbm90IGNvbnRhaW4gbm9ybWFsaXphdGlvbiByb3V0aW5lcywgc28gd2UgZG8gYSBzaW1wbGUgb25lIG1hbnVhbGx5OgpgYGB7cn0KIyBmaXJzdCBub3JtYWxpemUgd2l0aCB0aGUgdG90YWwgbVJOQSBwZXIgY2VsbApzdW0xIDwtIGFwcGx5KHNpbXVsYXRpb24sIDEsIHN1bSkKc2NhbGluZ3MgPC0gc3VtMS9tZWFuKHN1bTEpClggPC0gKDEvc2NhbGluZ3MpKnNpbXVsYXRpb24KCiMgd29ya2luZyB3aXRoIGxvZy10cmFuc2Zvcm1lZCBkYXRhIGlzIGJldHRlciBmb3IgZGVzdGlueQpYIDwtIGxvZyhYICsgMSkKYGBgCgpOb3cgd2UgY2FuIGNhbGN1bGF0ZSB0aGUgZGlmZnVzaW9uIG1hcDoKYGBge3J9CmxpYnJhcnkoZGVzdGlueSkKZG0gPC0gRGlmZnVzaW9uTWFwKFgsIHNpZ21hID0gImxvY2FsIiwgayA9IDE1KQpjZWxsX2Nvb3JkaW5hdGVzIDwtIGRtQGVpZ2VudmVjdG9yc1ssMTozXQpgYGAKCk5vdyB3ZSBjYW4gdXNlIE1FUkxvVCAtIGNhbGN1bGF0ZSB0aGUgc2NhZmZvbGQgdHJlZSwgZGVyaXZlIHRoZSBlbGFzdGljIHRyZWUgZnJvbSBpdCBhbmQgdGhlbiBlbWJlZCB0aGUgZWxhc3RpYyB0cmVlIGluIHRoZSBvcmlnaW5hbCBleHByZXNzaW9uIHNwYWNlOgpgYGB7cn0Kc2NhZmZvbGQgPC0gQ2FsY3VsYXRlU2NhZmZvbGRUcmVlKGNlbGxfY29vcmRpbmF0ZXMpCmVsYXN0aWMgPC0gQ2FsY3VsYXRlRWxhc3RpY1RyZWUoc2NhZmZvbGQpCmVtYmVkZGVkIDwtIEdlbmVzU3BhY2VFbWJlZGRpbmcoRXhwcmVzc2lvbk1hdHJpeCA9IFgsIEVsYXN0aWNUcmVlID0gZWxhc3RpYykKYGBgCgpOb3cgd2UgY2FuIGNhbGN1bGF0ZSBwc2V1ZG90aW1lcyBmcm9tIHRoZSBzdGFydGluZyBjZWxsIHdlIGRldGVybWluZWQgYmVmb3JlLCBhbmQgc28gcmV0cmlldmUgYnJhbmNoIGFuZCBwc2V1ZG90aW1lIGFzc2lnbm1lbnRzLgpgYGB7cn0KbWVybG90LnByZWRpY3Rpb24gPC0gQ2FsY3VsYXRlUHNldWRvdGltZXMoZW1iZWRkZWQsIEMwID0gc3RhcnQpCm1lcmxvdC5icmFuY2hlcyA8LSBtZXJsb3QucHJlZGljdGlvbiRDZWxsczJCcmFuY2hlcwptZXJsb3QucHNldWRvdGltZSA8LSBtZXJsb3QucHJlZGljdGlvbiRUaW1lc19jZWxscwpgYGAKCiMjIEV2YWx1YXRpb24geyNldmFsdWF0aW9ufQoKTm93IHdlIGNhbiBjYWxjdWxhdGUKYGBge3J9CgpgYGAKCgpgYGB7cn0KCmBgYAo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXZhbHVhdGluZyBwcmVkaWN0aW9ucyBvbiBgUFJPU1NUVGAgc2ltdWxhdGlvbnMiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KClRoZSBbYFBST1NTVFRgXShodHRwczovL2dpdGh1Yi5jb20vc29lZGluZ2xhYi9wcm9zc3R0KSBzdWl0ZSBzaW11bGF0ZXMgc2luZ2xlLWNlbGwgUk5BLXNlcSBjb3VudCBkYXRhIGZvciBjb21wbGV4IGRpZmZlcmVudGlhdGlvbiB0b3BvbG9naWVzLiBUaGlzIFIgcmVwb3NpdG9yeSBjb250YWlucyBhbGwgdGhlIG5lY2Vzc2FyeSBjb2RlIHRvIGV2YWx1YXRlIHByZWRpY3Rpb25zIG1hZGUgb24gc3VjaCBkYXRhc2V0cy4gV2l0aCBQUk9TU1RUIHNpbXVsYXRpb25zIGFuZCB0aGUgZXZhbHVhdGlvbiBjb2RlIGl0IGlzIGVhc3kgdG8gYnVpbGQgY29tcHJlaGVuc2l2ZSBiZW5jaG1hcmsgcGlwZWxpbmVzLCBsaWtlIGluIHRoZSBbYE1FUkxvVGBdKGh0dHBzOi8vZ2l0aHViLmNvbS9zb2VkaW5nbGFiL3Byb3NzdHQpIGJlbmNobWFyay4KCldlIHN0YXJ0IHdpdGggcmVhZGluZyB0aGUgc2ltdWxhdGlvbiBmaWxlcy4gSW4gb3JkZXIgdG8gcHJvZHVjZSBhIHByZWRpY3Rpb24gd2UgbmVlZCB0aGUgc2ltdWxhdGlvbiBpdHNlbGYsIGFuZCBpbiBvcmRlciB0byBldmFsdWF0ZSBpdCB3ZSBuZWVkIGl0cyBwYXJhbWV0ZXIgZmlsZXMuIEhlcmUgd2Ugd2lsbCBiZSB1c2luZyBhIHByZXBhY2thZ2VkIGV4YW1wbGU6IAoKYGBge3J9CiMgZmluZCB0aGUgZmlsZXMKc2ltX2ZpbGUgPC0gc3lzdGVtLmZpbGUoImV4YW1wbGUvc2ltdWxhdGlvbnMiLCAic2ltNDZfc2ltdWxhdGlvbi50eHQiLCBwYWNrYWdlID0gInByb3NzdHQiKQpjZWxsX3BhcmFtc19maWxlIDwtIHN5c3RlbS5maWxlKCJleGFtcGxlL3NpbXVsYXRpb25zIiwgInNpbTQ2X2NlbGxwYXJhbXMudHh0IiwgcGFja2FnZSA9ICJwcm9zc3R0IikKcGFyYW1zX2ZpbGUgPC0gc3lzdGVtLmZpbGUoImV4YW1wbGUvc2ltdWxhdGlvbnMiLCAic2ltNDZfcGFyYW1zLnR4dCIsIHBhY2thZ2UgPSAicHJvc3N0dCIpCgojIHJlYWQgdGhlbQpzaW11bGF0aW9uIDwtIHJlYWQudGFibGUoc2ltX2ZpbGUsIHNlcCA9ICJcdCIsIGhlYWRlciA9IFRSVUUsIHJvdy5uYW1lcyA9IDEpCmNlbGxfcGFyYW1zIDwtIHJlYWQudGFibGUoY2VsbF9wYXJhbXNfZmlsZSwgc2VwID0gIlx0IiwgaGVhZGVyID0gVFJVRSwgcm93Lm5hbWVzID0gMSkKYGBgCgpOb3cgaXQgaXMgdGltZSB0byBwcmVwcm9jZXNzIHRoZSBkYXRhIGFuZCBtYWtlIHByZWRpY3Rpb25zLiBGb3IgZGVtb25zdHJhdGlvbiBwdXJwb3NlcyB3ZSB3aWxsIGJlIHVzaW5nIFtNb25vY2xlIDJdKGh0dHA6Ly9jb2xlLXRyYXBuZWxsLWxhYi5naXRodWIuaW8vbW9ub2NsZS1yZWxlYXNlLykgYW5kIE1FUkxvVC4gSWYgeW91IGFscmVhZHkga25vdyBob3cgdG8gZ2V0IGJyYW5jaCBhbmQgcHNldWRvdGltZSBhc3NpZ25tZW50cyBmcm9tIHlvdXIgbWV0aG9kIHlvdSBjYW4gc2tpcCB0aGUgZm9sbG93aW5nIHNlY3Rpb25zIGFuZCBnbyBkaXJlY3RseSB0byB0aGUgW2V2YWx1YXRpb25dKCNldmFsdWF0aW9uKS4KCiMjIFRyYWplY3RvcnkgaW5mZXJlbmNlOiBNb25vY2xlIDIgeyNtb25vY2xlfQoKTG9hZCBtb25vY2xlIGFuZCBmb3JtYXQgdGhlIHNpbXVsYXRpb24gYXMgYSBDZWxsRGF0YVNldCBvYmplY3QuCmBgYHtyfQpsaWJyYXJ5KG1vbm9jbGUpCmV4cHJzIDwtIHQoYXMubWF0cml4KHNpbXVsYXRpb24pKQpkYXRhIDwtIG5ld0NlbGxEYXRhU2V0KGV4cHJzLCBleHByZXNzaW9uRmFtaWx5ID0gbmVnYmlub21pYWwoKSwgbG93ZXJEZXRlY3Rpb25MaW1pdCA9IDEpCmBgYAoKTmV4dCB3ZSBoYXZlIHRvIHBlcmZvcm0gc29tZSBwcmVwcm9jZXNzaW5nIHN0ZXBzOgpgYGB7cn0KZGF0YSA8LSBlc3RpbWF0ZVNpemVGYWN0b3JzKGRhdGEpCmRhdGEgPC0gZXN0aW1hdGVEaXNwZXJzaW9ucyhkYXRhKQpgYGAKCk1vbm9jbGUgY2FuIG5vdyBmaW5kIHRoZSBnZW5lcyBpdCBjb25zaWRlcnMgaW1wb3J0YW50IGZvciB0aGUgcHJvY2Vzcy4uLgpgYGB7cn0KZGF0YSA8LSBkZXRlY3RHZW5lcyhkYXRhLCBtaW5fZXhwcj0wLjEpCmRpc3BfdGFibGUgPC0gZGlzcGVyc2lvblRhYmxlKGRhdGEpCm9yZGVyaW5nX2dlbmVzIDwtIHN1YnNldChkaXNwX3RhYmxlLCBtZWFuX2V4cHJlc3Npb24gPj0gMC41ICYgZGlzcGVyc2lvbl9lbXBpcmljYWwgPj0gMipkaXNwZXJzaW9uX2ZpdCkkZ2VuZV9pZApkYXRhIDwtIHNldE9yZGVyaW5nRmlsdGVyKGRhdGEsIG9yZGVyaW5nX2dlbmVzKQpgYGAKCi4uLmFuZCB0aGVuIHBlcmZvcm0gZGltZW5zaW9uYWxpdHkgcmVkdWN0aW9uIGFuZCBpbmZlciBhIGxpbmVhZ2UgdHJlZS4KYGBge3J9CmRhdGEgPC0gcmVkdWNlRGltZW5zaW9uKGRhdGEsIG1heF9jb21wb25lbnRzID0gMywgYXV0b19wYXJhbV9zZWxlY3Rpb24gPSBUUlVFKQpkYXRhIDwtIG9yZGVyQ2VsbHMoZGF0YSwgcmV2ZXJzZT1GQUxTRSkKYGBgCgpCZWZvcmUgd2UgcmV0cmlldmUgTW9ub2NsZSdzIHByZWRpY3Rpb24gdGhvdWdoLCB3ZSBtdXN0IG1ha2Ugc3VyZSBpdCBzdGFydHMgbWVhc3VyaW5nIGl0cyBwc2V1ZG90aW1lIGZyb20gdGhlIGNvcnJlY3QgcG9pbnQuIFNpbmNlIE1vbm9jbGUgY2FuIG9ubHkgcGxhY2UgdGhlIHN0YXJ0aW5nIHBvaW50IG9mIHBzZXVkb3RpbWUgY2FsY3VsYXRpb24gYXQgYW4gZW5kcG9pbnQsIHdlIGhhdmUgdG8gZmluZCB0aGUgYnJhbmNoIGl0IHNob3VsZCBzdGFydCBmcm9tLiBUaGlzIGNhbiBiZSBkb25lIGluIGFuIGFyYml0cmFyaWx5IGNvbXBsaWNhdGVkIHdheTsgaGVyZSB3ZSB3aWxsIGxvb2sgaWYgYSBjZWxsIHdpdGggbWluaW11bSBwc2V1ZG90aW1lIGlzIGluIGFuIG91dGVyIGJyYW5jaCBhbmQgc2VsZWN0IHRoYXQgYnJhbmNoIGFzIHRoZSBzdGFydGluZyBvbmUuCmBgYHtyfQp0aW1lIDwtIGNlbGxfcGFyYW1zJHBzZXVkb3RpbWUgLSBtaW4oY2VsbF9wYXJhbXMkcHNldWRvdGltZSkgKyAxCnN0YXJ0IDwtIG1pbih3aGljaCh0aW1lID09IG1pbih0aW1lKSkpICMgdGhlcmUgbWF5IGJlIG1vcmUgdGhhbiBvbmU7IGluIHRoaXMgY2FzZSBqdXN0IHBpY2sgdGhlIGZpcnN0LgpzdGFydF9icmFuY2ggPC0gcERhdGEoZGF0YSkkU3RhdGVbc3RhcnRdCmBgYAoKTm93IGxldCBNb25vY2xlIGRvIHRoZSBhc3NpZ25tZW50cyBhZ2Fpbi4gVGhpcyB0aW1lIHdlIGNhbiByZXRyaWV2ZSB0aGUgcHJlZGljdGlvbnM6CmBgYHtyfQpkYXRhIDwtIG9yZGVyQ2VsbHMoZGF0YSwgcm9vdF9zdGF0ZSA9IHN0YXJ0X2JyYW5jaCkKbW9ub2NsZS5icmFuY2hlcyA8LSBwRGF0YShkYXRhKSRTdGF0ZQptb25vY2xlLnBzZXVkb3RpbWUgPC0gcERhdGEoZGF0YSkkUHNldWRvdGltZQpgYGAKCiMjIE1FUkxvVCArIGRlc3RpbnkgeyNtZXJsb3R9CgpXZSB3aWxsIHVzZSBNRVJMb1Qgd2l0aCBkaWZmdXNpb24gbWFwcyBwcm9kdWNlZCBieSBbZGVzdGlueV0oaHR0cHM6Ly9iaW9jb25kdWN0b3Iub3JnL3BhY2thZ2VzL3JlbGVhc2UvYmlvYy9odG1sL2Rlc3RpbnkuaHRtbCkuIEJvdGggcGFja2FnZXMgZG8gbm90IGNvbnRhaW4gbm9ybWFsaXphdGlvbiByb3V0aW5lcywgc28gd2UgZG8gYSBzaW1wbGUgb25lIG1hbnVhbGx5OgpgYGB7cn0KIyBmaXJzdCBub3JtYWxpemUgd2l0aCB0aGUgdG90YWwgbVJOQSBwZXIgY2VsbApzdW0xIDwtIGFwcGx5KHNpbXVsYXRpb24sIDEsIHN1bSkKc2NhbGluZ3MgPC0gc3VtMS9tZWFuKHN1bTEpClggPC0gKDEvc2NhbGluZ3MpKnNpbXVsYXRpb24KCiMgd29ya2luZyB3aXRoIGxvZy10cmFuc2Zvcm1lZCBkYXRhIGlzIGJldHRlciBmb3IgZGVzdGlueQpYIDwtIGxvZyhYICsgMSkKYGBgCgpOb3cgd2UgY2FuIGNhbGN1bGF0ZSB0aGUgZGlmZnVzaW9uIG1hcDoKYGBge3J9CmxpYnJhcnkoZGVzdGlueSkKZG0gPC0gRGlmZnVzaW9uTWFwKFgsIHNpZ21hID0gImxvY2FsIiwgayA9IDE1KQpjZWxsX2Nvb3JkaW5hdGVzIDwtIGRtQGVpZ2VudmVjdG9yc1ssMTozXQpgYGAKCk5vdyB3ZSBjYW4gdXNlIE1FUkxvVCAtIGNhbGN1bGF0ZSB0aGUgc2NhZmZvbGQgdHJlZSwgZGVyaXZlIHRoZSBlbGFzdGljIHRyZWUgZnJvbSBpdCBhbmQgdGhlbiBlbWJlZCB0aGUgZWxhc3RpYyB0cmVlIGluIHRoZSBvcmlnaW5hbCBleHByZXNzaW9uIHNwYWNlOgpgYGB7cn0Kc2NhZmZvbGQgPC0gQ2FsY3VsYXRlU2NhZmZvbGRUcmVlKGNlbGxfY29vcmRpbmF0ZXMpCmVsYXN0aWMgPC0gQ2FsY3VsYXRlRWxhc3RpY1RyZWUoc2NhZmZvbGQpCmVtYmVkZGVkIDwtIEdlbmVzU3BhY2VFbWJlZGRpbmcoRXhwcmVzc2lvbk1hdHJpeCA9IFgsIEVsYXN0aWNUcmVlID0gZWxhc3RpYykKYGBgCgpOb3cgd2UgY2FuIGNhbGN1bGF0ZSBwc2V1ZG90aW1lcyBmcm9tIHRoZSBzdGFydGluZyBjZWxsIHdlIGRldGVybWluZWQgYmVmb3JlLCBhbmQgc28gcmV0cmlldmUgYnJhbmNoIGFuZCBwc2V1ZG90aW1lIGFzc2lnbm1lbnRzLgpgYGB7cn0KbWVybG90LnByZWRpY3Rpb24gPC0gQ2FsY3VsYXRlUHNldWRvdGltZXMoZW1iZWRkZWQsIEMwID0gc3RhcnQpCm1lcmxvdC5icmFuY2hlcyA8LSBtZXJsb3QucHJlZGljdGlvbiRDZWxsczJCcmFuY2hlcwptZXJsb3QucHNldWRvdGltZSA8LSBtZXJsb3QucHJlZGljdGlvbiRUaW1lc19jZWxscwpgYGAKCiMjIE5haXZlIHByZWRpY3RvciBhbmQgY2hlYXQgcHJlZGljdG9yCgpJbiBvcmRlciB0byBoYXZlIHNvbWV0aGluZyBiYWQgYW5kIGdvb2QgdG8gY29tcGFyZSBhZ2FpbnN0LCB3ZSB3aWxsIG1ha2UgYSBuYWl2ZSBwcmVkaWN0b3IgKHdobyBhc3NpZ25zIGJyYW5jaGVzIGFuZCBwc2V1ZG90aW1lcyByYW5kb21seSkgYW5kIGEgY2hlYXRpbmcgcHJlZGljdG9yLCB3aG8gY29waWVzIHRoZSB0cnVlIGJyYW5jaCBhbmQgcHNldWRvdGltZSBhc3NpZ25tZW50czoKCmBgYHtyfQpOIDwtIGRpbShzaW11bGF0aW9uKVsxXSAjIHRvdGFsIG51bWJlciBvZiBjZWxscwpuYWl2ZS5icmFuY2hlcyA8LSBzYW1wbGUoMTo1LCBOLCByZXBsYWNlID0gVFJVRSkKbmFpdmUucHNldWRvdGltZSA8LSBzYW1wbGUoMToxNTAsIE4sIHJlcGxhY2UgPSBUUlVFKQoKY2hlYXQuYnJhbmNoZXMgPC0gY2VsbF9wYXJhbXMkYnJhbmNoZXMKY2hlYXQucHNldWRvdGltZSA8LSBjZWxsX3BhcmFtcyRwc2V1ZG90aW1lCmBgYAoKIyMgRXZhbHVhdGlvbiB7I2V2YWx1YXRpb259CgpgYGB7cn0KbGlicmFyeShwcm9zc3R0KQpgYGAKClRoZXJlIGlzLCB0byB0aGUgYmVzdCBvZiBvdXIga25vd2xlZGdlLCBubyBtZWFzdXJlIHRvIGFzc2VzcyBicmFuY2ggYXNzaWdubWVudCBhbmQgcHNldWRvdGltZSBwcmVkaWN0aW9uIGF0IHRoZSBzYW1lIHRpbWUsIHNvIHdlIHRyZWF0IHRoZW0gYXMgc2VwYXJhdGUgcHJvYmxlbXMuCgojIyMgQnJhbmNoIGFzc2lnbm1lbnQKCkJyYW5jaCBhc3NpZ25tZW50IGNhbiBiZSB2aWV3ZWQgYXMgYSBjbHVzdGVyaW5nIHByb2JsZW0sIHdoZXJlIHRoZSBicmFuY2ggaWRlbnRpdHkgb2YgZWFjaCBjZWxsIGluIHRoZSBzaW11bGF0aW9uIGlzIGl0cyB0cnVlIGNsdXN0ZXIgaWRlbnRpdHkuIENvbXBhcmluZyBwYWlycyBvZiBwb2ludHMgdGhlbiBkZWZpbmVzIGEgdHJ1dGggdGFibGU6CmBgYHtyfQojIFRQOiBwYWlyIG9mIHBvaW50cyBpbiBzYW1lIGNsdXN0ZXIgaW4gcHJlZGljdGlvbiwgdHJ1dGgKIyBUTjogcGFpciBvZiBwb2ludHMgaW4gZGlmZi4gY2x1c3RlciBpbiBwcmVkaWN0aW9uLCB0cnV0aAojIEZOOiBwYWlyIG9mIHBvaW50cyBpbiBkaWZmLiBjbHVzdGVyIGluIHByZWRpY3Rpb24sIHNhbWUgaW4gdHJ1dGgKIyBGUDogcGFpciBvZiBwb2ludHMgaW4gc2FtZSBjbHVzdGVyIGluIHByZWRpY3Rpb24sIGRpZmYuIGluIHRydXRoCiMgd2hlbiB0aGVyZSBhcmUgTkEgdmFsdWVzIGluIHRoZSBwcmVkaWN0aW9uczoKIyBOQXMgYXJlIGNvbnNpZGVyZWQgRk5zCm1vbm9jbGUudGFibGUgPC0gYXNzaWduX3N0YXR1cyhwcmVkaWN0aW9uID0gbW9ub2NsZS5icmFuY2hlcywgdHJ1dGggPSBjZWxsX3BhcmFtcyRicmFuY2hlcykKYGBgCgpUaGlzIHVubG9ja3MgYWxsIFtleHRlcm5hbCBldmFsdWF0aW9uXShodHRwczovL2VuLndpa2lwZWRpYS5vcmcvd2lraS9DbHVzdGVyX2FuYWx5c2lzI0V4dGVybmFsX2V2YWx1YXRpb24pIG1lYXN1cmVzIHRoYXQgYXJlIGJhc2VkIG9uIHRydXRoIHRhYmxlcy4gRml2ZSBvZiB0aGVzZSBhcmUgaW1wbGVtZW50ZWQgaGVyZSAodW53ZWlnaHRlZCBSYW5kIEluZGV4LCBNYXR0aGV3cyBDb3JyZWxhdGlvbiBDb2VmZmljaWVudCwgRiBtZWFzdXJlLCBKYWNjYXJkIEluZGV4LCBhbmQgRm93a2xlcy1NYWxsb3dzIEluZGV4KS4KYGBge3J9Cm1hdHRoZXdzX2Nvcihtb25vY2xlLnRhYmxlKQpgYGAKCldoaWxlIGFsbCB0aGUgYWZvcmVtZW50aW9uZWQgaW5kaWNlcyBhbmQgbWVhc3VyZXMgYXJlIHdlbGwgZXN0YWJsaXNoZWQsIHdlIGZlZWwgdGhleSBtYXkgYmUgc3Vib3B0aW1hbCBwZXJmb3JtYW5jZSBpbmRpY2F0b3JzIGZvciB0aGUgcHJvYmxlbSBhdCBoYW5kLCBzaW5jZSB0aGV5IGRvbid0IHRha2UgY2x1c3RlciBzdHJ1Y3R1cmUgaW50byBjb25zaWRlcmF0aW9uLiBJbiB0aGVpciBwbGFjZSB3ZSBzdWdnZXN0IHRoZSBhZGp1c3RlZCBNdXR1YWwgSW5mb3JtYXRpb24sIGEgbm9ybWFsaXphdGlvbiBvZiBNdXR1YWwgSW5mb3JtYXRpb24gd2hpY2ggYXNzdW1lcyBhIGh5cGVyZ2VvbWV0cmljIGJhY2tncm91bmQgZGlzdHJpYnV0aW9uIChmb3IgbW9yZSBkZXRhaWxzIGFuZCBzb21lIGp1c3RpZmljYXRpb24sIHBsZWFzZSByZWZlciB0byB0aGUgc3VwcGxlbWVudGFsIG1hdGVyaWFsIG9mIHRoZSBQUk9TU1RUIHBhcGVyKS4KCmBgYHtyfQphZGp1c3RlZF9taShwcmVkaWN0aW9uID0gbW9ub2NsZS5icmFuY2hlcywgdHJ1dGggPSBjZWxsX3BhcmFtcyRicmFuY2hlcykKYGBgCgojIyMgUHNldWRvdGltZSBwcmVkaWN0aW9uCgpQc2V1ZG90aW1lIHF1YW50aWZpZXMgcHJvZ3Jlc3MgdGhyb3VnaCB0aGUgcHJvY2VzczsgZGV2ZWxvcG1lbnRhbCB0aW1lLiBTaW5jZSBpdCBpcyBub3QgZGlyZWN0bHkgdHJhbnNsYXRhYmxlIHRvIHdhbGwgdGltZSwgaXRzIGFic29sdXRlIHZhbHVlIGlzIG5vdCBpbXBvcnRhbnQuIFJhdGhlciwgaXQgaXMgaW1wb3J0YW50IHRoYXQgY2VsbHMgYXJlIG9yZGVyZWQgY29ycmVjdGx5LCBhbmQgY2VsbHMgZnJvbSBkaWZmZXJlbnQgZGV2ZWxvcG1lbnRhbCBzdGFnZXMgYXJlIG5vdCBtaXhlZCB0b2dldGhlciBpbiB0aGUgbGluZWFnZSB0cmVlIHJlY29uc3RydWN0aW9uLiBUaGVyZWZvcmUgYXNzZXNzaW5nIHBzZXVkb3RpbWUgcHJlZGljdGlvbnMgY29uc2lzdHMgb2YgY29tcGFyaW5nIG9yZGVyZWQgc2VxdWVuY2VzOyB0aGUgb3JkZXJpbmcgb2YgY2VsbHMgdGhhdCBzdGVtcyBmcm9tIHRoZSBsYWJlbGVkIHBzZXVkb3RpbWUgYW5kIHRoZSBvcmRlcmluZyBmcm9tIHRoZSBwcmVkaWN0ZWQgcHNldWRvdGltZS4KClNpbWlsYXIgdG8gcHJldmlvdXNseSwgb25lIGNhbiBjb21wYXJlIHRoZSByZWxhdGl2ZSBvcmRlcmluZyBvZiBhbGwgcGFpcnMgb2YgY2VsbHMgaW4gdGhlIGFubm90YXRpb24gYW5kIHRoZSBwcmVkaWN0aW9uLCBpbiBvcmRlciB0byBjYWxjdWxhdGUgdGhlICh1bndlaWdodGVkKSBHb29kbWFuLUtydXNrYWwgYW5kICh1bndlaWdodGVkKSBLZW5kYWxsIGluZGljZXMuIEl0IGlzIGVhc3kgdG8gZXh0ZW5kIHRoZXNlIGluZGljZXMgdG8gdGFrZSBpbnRvIGFjY291bnQgdGhlIHBzZXVkb3RpbWUgZGlzdGFuY2UgYmV0d2VlbiB0aGUgY2VsbHMuCmBgYHtyfQpnb29kbWFuX2tydXNrYWxfaW5kZXgoY2VsbF9wYXJhbXMkcHNldWRvdGltZSwgbWVybG90LnBzZXVkb3RpbWUsIHdlaWdodGVkID0gRkFMU0UpCmBgYAoKQm90aCBpbmRpY2VzIGhhdmUgc3ltbWV0cmljIGZvcm11bGFzLCBzbyB0aGUgb3JkZXIgb2YgdGhlIGFyZ3VtZW50cyBpcyBub3QgaW1wb3J0YW50LiBPdXIgZXhwZXJpZW5jZSBoYXMgc2hvd24gdGhhdCBhbGwgZm91ciBpbmRpY2VzIGNvcnJlbGF0ZSB2ZXJ5IHdlbGwgd2l0aCBlYWNoIG90aGVyLgoKSG93ZXZlciB0aGVyZSBpcyBhbm90aGVyIGNvbmNlcm4gd2hlbiBpdCBjb21lcyB0byBwc2V1ZG90aW1lOyBwc2V1ZG90aW1lIG9ubHkgZXN0YWJsaXNoZXMgYSBwYXJ0aWFsIG9yZGVyaW5nIG9uIGNlbGxzIGFuZCBubyBhYnNvbHV0ZSB0aW1lLiBUaGVyZWZvcmUsIGNlbGxzIG9uIGJyYW5jaGVzIG5vdCBwYXNzZWQgdGhyb3VnaCBvbmUgYWZ0ZXIgdGhlIG90aGVyIGNhbm5vdCBiZSBjb21wYXJlZC4gSW4gb3JkZXIgdG8gY2lyY3VtdmVudCB0aGlzIHByb2JsZW0sIHdlIGZpbmQgdGhlIGxvbmdlc3QgcGF0aCBpbiB0aGUgdHJlZSAoZnJvbSB0aGUgcm9vdCB0byBhIGxlYWYpIGFuZCBjb21wYXJlIHRoZSBwcmVkaWN0ZWQgcHNldWRvdGltZSB3aXRoIHRoZSBzaW11bGF0ZWQgb25lIGZvciB0aGUgY2VsbHMgb24gdGhpcyBwYXRoLgpgYGB7cn0KbG9uZ2VzdF9wYXRoIDwtIGdldF9scGdrX2luZGljZXMocGFyYW1zX2ZpbGUsIGNlbGxfcGFyYW1zKQp0cnVlX3RpbWVzIDwtIGNlbGxfcGFyYW1zJHBzZXVkb3RpbWVbbG9uZ2VzdF9wYXRoXQptZXJsb3QubG9uZ2VzdF9wYXRoIDwtIG1lcmxvdC5wc2V1ZG90aW1lW2xvbmdlc3RfcGF0aF0KYGBgCgpJdCBpcyB0aGVuIHZhbGlkIHRvIGNhbGN1bGF0ZSBvbmUgb2YgdGhlIGluZGljZXMgb24gdGhpcyBzdWJzZXQgb2YgdGhlIGxpbmVhZ2UgdHJlZToKYGBge3J9Cmdvb2RtYW5fa3J1c2thbF9pbmRleCh0cnVlX3RpbWVzLCBtZXJsb3QubG9uZ2VzdF9wYXRoLCB3ZWlnaHRlZCA9IEZBTFNFKQpgYGAKCkluIG9yZGVyIHRvIGRvIGV2ZXJ5dGhpbmcgYXQgb25jZToKCmBgYHtyfQptb25vY2xlLnJlc3VsdCA8LSBldmFsdWF0ZV9tZXRob2QoIm1vbm9jbGUiLCBtb25vY2xlLmJyYW5jaGVzLCBtb25vY2xlLnBzZXVkb3RpbWUsIGNlbGxfcGFyYW1zLCBwYXJhbXNfZmlsZSkKbWVybG90LnJlc3VsdCA8LSBldmFsdWF0ZV9tZXRob2QoIm1lcmxvdCIsIG1lcmxvdC5icmFuY2hlcywgbWVybG90LnBzZXVkb3RpbWUsIGNlbGxfcGFyYW1zLCBwYXJhbXNfZmlsZSkKbmFpdmUucmVzdWx0IDwtIGV2YWx1YXRlX21ldGhvZCgibmFpdmUiLCBuYWl2ZS5icmFuY2hlcywgbmFpdmUucHNldWRvdGltZSwgY2VsbF9wYXJhbXMsIHBhcmFtc19maWxlKQpjaGVhdC5yZXN1bHQgPC0gZXZhbHVhdGVfbWV0aG9kKCJjaGVhdCIsIGNoZWF0LmJyYW5jaGVzLCBjaGVhdC5wc2V1ZG90aW1lLCBjZWxsX3BhcmFtcywgcGFyYW1zX2ZpbGUpCmFsbC5yZXN1bHRzIDwtIHJiaW5kKG1vbm9jbGUucmVzdWx0LCBtZXJsb3QucmVzdWx0LCBuYWl2ZS5yZXN1bHQsIGNoZWF0LnJlc3VsdCkKYWxsLnJlc3VsdHMKYGBgCgojIyBQbG90dGluZwoKSW4gb3JkZXIgdG8gZ2V0IGEgZmVlbGluZyBmb3Igd2hhdCB0aGVzZSBzY29yZXMgbWVhbiB3ZSBjYW4gcGxvdCB0aGUgcHJlZGljdGlvbnMuIFdlIHdpbGwgY3JlYXRlIGEgZmxhdCAoMkQpIHJlcHJlc2VudGF0aW9uIG9mIHRoZSBsaW5lYWdlIHRyZWUgYW5kIHRoZSBjZWxscyB0aGF0IGFyZSBpbiB0aGUgc2ltdWxhdGlvbiBhbmQgdGhlbiBjb2xvciBpdCBhY2NvcmRpbmcgdG8gdGhlIHByZWRpY3Rpb25zLgpgYGB7cn0Kb2Zmc2V0cyA8LSBmbGF0X3NpbXVsYXRpb24oY2VsbF9wYXJhbXMsIHBhcmFtc19maWxlLCBtb2RlID0gInByb3NzdHQiKQpwYXIobWZyb3c9YygyLDIpKQpwbG90X2ZsYXRfdHJlZShjZWxsX3BhcmFtcywgb2Zmc2V0cywgY2hlYXQuYnJhbmNoZXMsIHBsb3RfdGl0bGUgPSAiY2hlYXQiKQpwbG90X2ZsYXRfdHJlZShjZWxsX3BhcmFtcywgb2Zmc2V0cywgbmFpdmUuYnJhbmNoZXMsIHBsb3RfdGl0bGUgPSAibmFpdmUiKQpwbG90X2ZsYXRfdHJlZShjZWxsX3BhcmFtcywgb2Zmc2V0cywgbW9ub2NsZS5icmFuY2hlcywgcGxvdF90aXRsZSA9ICJtb25vY2xlIikKcGxvdF9mbGF0X3RyZWUoY2VsbF9wYXJhbXMsIG9mZnNldHMsIG1lcmxvdC5icmFuY2hlcywgcGxvdF90aXRsZSA9ICJtZXJsb3QiKQpgYGAKCgoKCgoKCgoKCgoKCgoKCgo=</div>
 
 
 

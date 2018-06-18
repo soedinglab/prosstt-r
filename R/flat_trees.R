@@ -1,10 +1,13 @@
-library(readr)
-library(igraph)
-library(viridis)
-library(LSD)
-
-read_prosstt_topology <- function(job) {
-  params <- read_delim(paste(job, "_params.txt", sep=""), ":", col_names = FALSE, trim_ws = TRUE)
+#' Read the topology of a PROSSTT-style simulation
+#'
+#' Reads a parameter file and returns the topology as pairs of connected
+#' branches
+#'
+#' @param param_file location of the parameter file
+#'
+#' @return the simulation topology as a matrix
+read_prosstt_topology <- function(param_file) {
+  params <- readr::read_delim(param_file, ":", col_names = FALSE, trim_ws = TRUE)
   top_index <- which(params$X1 == "topology")
   group <- strsplit(params$X2[top_index], "],")[[1]]
   processed <- gsub("\\[|\\]|\\s", "", group, perl = TRUE)
@@ -16,12 +19,28 @@ read_prosstt_topology <- function(job) {
   topology
 }
 
+#' Reorders the cells of a branch according to their pseudotime
+#'
+#' Reorders the cells of a branch according to their pseudotime
+#'
+#' @param b the branch which to order
+#' @param branches the branch labels of all cells
+#' @param times the pseudotime labels of all cells
+#'
+#' @return the cells of branch b ordered by pseudotime
 time_ordered_branch <- function(b, branches, times) {
   x <- which(branches == b)
   y <- times[x]
   x[order(y)]
 }
 
+#' Spaces points equally.
+#'
+#' Proposes n equidistantly spaced points.
+#'
+#' @param n number of points needed
+#'
+#' @return equispaced replacement candidates
 fan_out <- function(n) {
   candidates <- seq(-(n-1) %/% 2, n %/% 2)
   if (n %% 2 == 1) {
@@ -31,12 +50,30 @@ fan_out <- function(n) {
   }
 }
 
+#' Which of the duplicates should be flipped
+#'
+#' Given a vector of (possible) duplicates, decide which to flip
+#'
+#' @param duplics a vector of duplicates
+#'
+#' @return which duplicates to flip
 to_flip <- function(duplics) {
   tmp <- which(duplics, arr.ind = TRUE)
   keep <- (tmp[,"row"] < tmp[,"col"]) #& (abs(tmp[,"row"] - tmp[,"col"]) == 1)
   tmp[keep,]
 }
 
+#' Orders branches in current tree zone
+#'
+#' Orders branch endpoints so that adjacent branches have the same parent and 
+#' everyone has different endpoints
+#'
+#' @param x the current branch endpoints
+#' @param zone which timezone we are at (see PROSSTT)
+#' @param parents the parent of each branch
+#' @param branch_orientation the offsets
+#'
+#' @return the branches of the current timezone, ordered correctly
 branch_order <- function(x, zone, parents, branch_orientation) {
   index <- seq_along(x)
   duplics <- outer(x, x, "==")
@@ -61,14 +98,26 @@ branch_order <- function(x, zone, parents, branch_orientation) {
   res
 }
 
-flat_simulation <- function(job, mode = "prosstt") {
-  params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
+#' Calculate offsets in order to plot a simulation in 2D
+#'
+#' Orders all cells in a simulation by branch and time label, trying to avoid
+#' overlaps.
+#'
+#' @param cell_params a data frame that includes branch and pseudotime labels
+#' @param param_file location of the PROSSTT parameter file
+#' @param mode whether the simulations are produced by PROSSTT directly or by
+#' splatter after the MERLoT script
+#'
+#' @return the start and end point of each branch in 2D
+#'
+#' @export
+flat_simulation <- function(cell_params, param_file, mode = "prosstt") {
   if (mode == "prosstt") {
-    branches <- params$branches + 1
-    topology <- read_prosstt_topology(job) + 1
+    branches <- cell_params$branches + 1
+    topology <- read_prosstt_topology(param_file) + 1
   } else {
-    branches <- params$branches
-    topology <- read_prosstt_topology(job)
+    branches <- cell_params$branches
+    topology <- read_prosstt_topology(param_file)
   }
 
   N <- length(branches)
@@ -78,7 +127,7 @@ flat_simulation <- function(job, mode = "prosstt") {
   branch_orientation <- data.frame(from = rep(0, num_branches),
                                   to = rep(0, num_branches),
                                   zone = rep(0, num_branches))
-  g <- graph_from_edgelist(topology)
+  g <- igraph::graph_from_edgelist(topology)
   branch_orientation$zone <- distances(g)[1,]
   bla <- table(topology[,1])
   children <- rep(0, num_branches)
@@ -94,7 +143,7 @@ flat_simulation <- function(job, mode = "prosstt") {
   }
 
   root <- which(sapply(sapply(V(g), function(x) neighbors(g,x, mode="in")), length) == 0)
-  depth_first_search <- bfs(g, root)
+  depth_first_search <- igraph::bfs(g, root)
 
   for (n_from in depth_first_search$order) {
     b_from <- which(branch_names == n_from)
