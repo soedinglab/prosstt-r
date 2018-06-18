@@ -65,18 +65,18 @@ evaluate_method <- function(method, mbranches, mtimes, cells_params, par_loc, re
 #'
 #' @export
 get_lpgk_indices <- function(par_loc, cell_params) {
-  cell_params$branches = cell_params$branches + 1
-  time = cell_params$pseudotime - min(cell_params$pseudotime) + 1
+  cell_params$branches <- cell_params$branches + 1
+  time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
 
-  StartCell = rownames(cell_params)[which(time==min(time))][1]
-  EndCell = rownames(cell_params)[which(time==max(time))][1]
+  StartCell <- rownames(cell_params)[which(time == min(time))][1]
+  EndCell <- rownames(cell_params)[which(time == max(time))][1]
 
-  StartBranch = cell_params[StartCell,]$branches
-  EndBranch = cell_params[EndCell,]$branches
+  StartBranch <- cell_params[StartCell,]$branches
+  EndBranch <- cell_params[EndCell,]$branches
 
-  results = system(sprintf("awk '{if($0~/topology/) print}' %s", par_loc), intern = T)
-  digits = gregexpr("[0-9]+", results)
-  Branches = as.numeric(regmatches(results, digits)[[1]])
+  results <- system(sprintf("awk '{if($0~/topology/) print}' %s", par_loc), intern = T)
+  digits <- gregexpr("[0-9]+", results)
+  Branches <- as.numeric(regmatches(results, digits)[[1]])
   # if the simulation contains a linear topology then the line will read
   # topology: []
   # of course this means that digits will not contain any numbers,
@@ -88,16 +88,16 @@ get_lpgk_indices <- function(par_loc, cell_params) {
   }
 
   # Create adjacency matrix and calculate shortest path in between start and end branches
-  BranchConnections = matrix(0, max(Branches), max(Branches))
+  BranchConnections <- matrix(0, max(Branches), max(Branches))
   for (i in seq(from=1, to=length(Branches), by=2)) {
     BranchConnections[Branches[i], Branches[i+1]]=1
     BranchConnections[Branches[i+1], Branches[i]]=1
   }
 
-  Graph_Branches=graph_from_adjacency_matrix(BranchConnections)
-  LongestPath=unlist(shortest_paths(Graph_Branches, from=StartBranch, to=EndBranch)$vpath)
+  Graph_Branches <- igraph::graph_from_adjacency_matrix(BranchConnections)
+  LongestPath <- unlist(igraph::shortest_paths(Graph_Branches, from = StartBranch, to = EndBranch)$vpath)
 
-  LongestPathCellsID=which(cell_params$branches %in% LongestPath)
+  LongestPathCellsID <- which(cell_params$branches %in% LongestPath)
   return(LongestPathCellsID)
 }
 
@@ -146,12 +146,12 @@ merlot_trajectories <- function(tree_name, job,  embed = TRUE) {
     X <- as.matrix(raw_data)
     sum1 <- apply(X, 1, sum)
     scalings <- sum1/mean(sum1)
-    X = (1/scalings)*X
+    X <- (1/scalings)*X
     X <- log(X + 1)
     merlot <- GenesSpaceEmbeddingNew(ExpressionMatrix = X, ElasticTree = merlot)
   }
 
-  g <- graph_from_edgelist(merlot$Edges, directed = FALSE)
+  g <- igraph::graph_from_edgelist(merlot$Edges, directed = FALSE)
   endpoints <- merlot$Topology$Endpoints
 
   res <- list()
@@ -161,10 +161,10 @@ merlot_trajectories <- function(tree_name, job,  embed = TRUE) {
     end_from <- endpoints[i]
     for (j in (i+1):n) {
       end_to <- endpoints[j]
-      paths <- shortest_paths(g, end_from, end_to)
+      paths <- igraph::shortest_paths(g, end_from, end_to)
       nodes_in_path <- paths$vpath[[1]]
       cells_in_path <- merlot$Cells2TreeNodes[,2] %in% nodes_in_path
-      k = (n*(n-1)/2) - (n-(i-1))*((n-(i-1))-1)/2 + j - i
+      k <- (n*(n-1)/2) - (n-(i-1))*((n-(i-1))-1)/2 + j - i
       # print(c(i, j, k))
       res[[k]] <- rownames(cell_params)[cells_in_path]
     }
@@ -199,10 +199,10 @@ tscan_trajectories <- function(tree_name, job, embed=FALSE) {
     end_from <- endpoints[i]
     for (j in (i+1):n) {
       end_to <- endpoints[j]
-      paths <- shortest_paths(g, end_from, end_to)
+      paths <- igraph::shortest_paths(g, end_from, end_to)
       nodes_in_path <- paths$vpath[[1]]
       cells_in_path <- tscanned$clusterid %in% nodes_in_path
-      k = (n*(n-1)/2) - (n-(i-1))*((n-(i-1))-1)/2 + j - i
+      k <- (n*(n-1)/2) - (n-(i-1))*((n-(i-1))-1)/2 + j - i
       # print(c(i, j, k))
       res[[k]] <- rownames(cell_params)[cells_in_path]
     }
@@ -237,11 +237,11 @@ monocle_trajectories <- function(tree_name, job, embed=FALSE) {
     end_from <- endpoints[i]
     for (j in (i+1):n) {
       end_to <- endpoints[j]
-      paths <- shortest_paths(g, end_from, end_to)
+      paths <- igraph::shortest_paths(g, end_from, end_to)
       nodes_in_path <- paths$vpath[[1]]
       cells2nodes <- monocle2@auxOrderingData$DDRTree$pr_graph_cell_proj_closest_vertex
       cells_in_path <- cells2nodes %in% nodes_in_path
-      k = (n*(n-1)/2) - (n-(i-1))*((n-(i-1))-1)/2 + j - i
+      k <- (n*(n-1)/2) - (n-(i-1))*((n-(i-1))-1)/2 + j - i
       # print(c(i, j, k))
       res[[k]] <- rownames(cell_params)[cells_in_path]
     }

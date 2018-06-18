@@ -23,14 +23,14 @@ Now it is time to preprocess the data and make predictions. For demonstration pu
 ## Trajectory inference: Monocle 2 {#monocle}
 
 Load monocle and format the simulation as a CellDataSet object.
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(monocle)
 exprs <- t(as.matrix(simulation))
 data <- newCellDataSet(exprs, expressionFamily = negbinomial(), lowerDetectionLimit = 1)
 ```
 
 Next we have to perform some preprocessing steps:
-```{r}
+```{r, message=FALSE, warning=FALSE}
 data <- estimateSizeFactors(data)
 data <- estimateDispersions(data)
 ```
@@ -84,7 +84,8 @@ cell_coordinates <- dm@eigenvectors[,1:3]
 ```
 
 Now we can use MERLoT - calculate the scaffold tree, derive the elastic tree from it and then embed the elastic tree in the original expression space:
-```{r}
+```{r, message=FALSE, warning=FALSE}
+library(merlot)
 scaffold <- CalculateScaffoldTree(cell_coordinates)
 elastic <- CalculateElasticTree(scaffold)
 embedded <- GenesSpaceEmbedding(ExpressionMatrix = X, ElasticTree = elastic)
@@ -97,17 +98,21 @@ merlot.branches <- merlot.prediction$Cells2Branches
 merlot.pseudotime <- merlot.prediction$Times_cells
 ```
 
-## Naive predictor and cheat predictor
+## Baseline predictors
 
-In order to have something bad and good to compare against, we will make a naive predictor (who assigns branches and pseudotimes randomly) and a cheating predictor, who copies the true branch and pseudotime assignments:
+In order to have something bad and good to compare against, we will make a random predictor (who assigns branches and pseudotimes randomly) and a cheating predictor, who copies the true branch and pseudotime assignments. As a middle ground, we will make a naive predictor, who predicts everything to be in the same branch and in the same pseudotime.
 
 ```{r}
 N <- dim(simulation)[1] # total number of cells
-naive.branches <- sample(1:5, N, replace = TRUE)
-naive.pseudotime <- sample(1:150, N, replace = TRUE)
+random.branches <- sample(1:5, N, replace = TRUE)
+random.pseudotime <- sample(1:150, N, replace = TRUE)
 
 cheat.branches <- cell_params$branches
 cheat.pseudotime <- cell_params$pseudotime
+
+naive.branches <- rep(1, N)
+naive.branches[1] <- 2 # we need at least 2 clusters otherwise some of the metrics won't work
+naive.pseudotime <- rep(1, N)
 ```
 
 ## Evaluation {#evaluation}
@@ -168,26 +173,52 @@ goodman_kruskal_index(true_times, merlot.longest_path, weighted = FALSE)
 In order to do everything at once:
 
 ```{r}
-monocle.result <- evaluate_method("monocle", monocle.branches, monocle.pseudotime, cell_params, params_file)
-merlot.result <- evaluate_method("merlot", merlot.branches, merlot.pseudotime, cell_params, params_file)
-naive.result <- evaluate_method("naive", naive.branches, naive.pseudotime, cell_params, params_file)
 cheat.result <- evaluate_method("cheat", cheat.branches, cheat.pseudotime, cell_params, params_file)
-all.results <- rbind(monocle.result, merlot.result, naive.result, cheat.result)
-all.results
+merlot.result <- evaluate_method("merlot", merlot.branches, merlot.pseudotime, cell_params, params_file)
+monocle.result <- evaluate_method("monocle", monocle.branches, monocle.pseudotime, cell_params, params_file)
+naive.result <- evaluate_method("naive", naive.branches, naive.pseudotime, cell_params, params_file)
+random.result <- evaluate_method("random", random.branches, random.pseudotime, cell_params, params_file)
+all.results <- rbind(cheat.result, merlot.result, monocle.result, naive.result, random.result)
 ```
+
+### Results and interpretation
+
+Let's look at the branch assignment scores first:
+
+```{r}
+all.results[,1:6]
+```
+As we can see, the "random" and the "naive" predictors have clearly worse scores than MERLoT and monocle. However, the scores are not as bad as we would think they are: the random predictor, for example, has a decent Rand index. This is because of the high number of TNs in the truth table: there are only ~50 cells in each branch, so the number of possible pairs that are in different branches is very high, and when assigning one of five branches randomly, chances are that most (about 4/5s) TN pairs will be placed in different clusters.
+
+The naive predictor has a suspiciously high F1 score. This is also easy to explain: since we predicted (almost) all cells in the same cluster, we will have a precision of around 1/5, but a recall (\(\frac{TP}{TP + FN}\)) of almost 1: we get the highest possible number of TPs because we predict all cells in the same branch to be in the same branch, and our FNs are really low, because there are (almost) no cells we predict to be in different clusters while they are in the same one in truth.
+
+Similar concerns can be expressed for the Fowkles-Mallows index, where the absence of TNs in the formula masks the bad performance of the naive and random predictors. In fact, the only index that fully reflects what we know to be true, namely that the random and the naive predictor are both bad, is the adjusted Mutual Information, which takes the number of clusters into account.
+
+```{r, warning=FALSE, include=FALSE}
+shortnames <- c("GK unweighted", "GK weighted", "Kendall unweighted", "Kendall weighted")
+colnames(all.results)[7:10] <- shortnames
+```
+
+Similar concerns can affect the pseudotime measures:
+```{r}
+all.results[, 7:10]
+```
+
+Notice how the Goodman-Kruskal score is perfect for the naive predictor; since the Goodman-Kruskal index doesn't take neutral pairs (pairs with same ordering in one of the input sequences) into account, the score is determined by the ordering of all the points with respect to the one point we set to pseudotime 2; it happened that this point had the highest pseudotime and so all other points (which have a pseudotime of 1 in the naive prediction) get full marks for being "ordered".
+
+Apart from that, all pseudotime indices correlate to a high degree, as our experience (and the MERLoT benchmark) suggest. This is not surprising, as they are based on the same idea, that of counting concordant and discordant pairs between two orderings.
 
 ## Plotting
 
 In order to get a feeling for what these scores mean we can plot the predictions. We will create a flat (2D) representation of the lineage tree and the cells that are in the simulation and then color it according to the predictions.
-```{r}
+```{r, message=FALSE, warning=FALSE}
 offsets <- flat_simulation(cell_params, params_file, mode = "prosstt")
 par(mfrow=c(2,2))
 plot_flat_tree(cell_params, offsets, cheat.branches, plot_title = "cheat")
-plot_flat_tree(cell_params, offsets, naive.branches, plot_title = "naive")
+plot_flat_tree(cell_params, offsets, random.branches, plot_title = "random")
 plot_flat_tree(cell_params, offsets, monocle.branches, plot_title = "monocle")
 plot_flat_tree(cell_params, offsets, merlot.branches, plot_title = "merlot")
 ```
-
 
 
 

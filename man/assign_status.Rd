@@ -12,7 +12,7 @@ assign_status(prediction, truth)
 \item{truth}{true cluster assignments}
 }
 \value{
-the truth table for this prediction given the truth
+the truth table for this prediction given the truth: (TP, TN, FN, FP)
 }
 \description{
 Goes over all pairs of points in the prediction and truth and classifies

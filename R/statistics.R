@@ -80,7 +80,7 @@ adjusted_mi <- function(prediction, truth){
   l2 <- length(s2)
   N <- length(prediction)
   tij <- table(prediction, truth)
-  mi <- mutinformation(prediction, truth)
+  mi <- infotheo::mutinformation(prediction, truth)
 
   # avoid log(0)
   ls1 <- s1/N
@@ -112,7 +112,7 @@ adjusted_mi <- function(prediction, truth){
 #' @param prediction predicted cluster assignments
 #' @param truth true cluster assignments
 #'
-#' @return the truth table for this prediction given the truth
+#' @return the truth table for this prediction given the truth: (TP, TN, FN, FP)
 #'
 #' @export
 assign_status <- function(prediction, truth) {

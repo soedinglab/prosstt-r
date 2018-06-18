@@ -128,7 +128,7 @@ flat_simulation <- function(cell_params, param_file, mode = "prosstt") {
                                   to = rep(0, num_branches),
                                   zone = rep(0, num_branches))
   g <- igraph::graph_from_edgelist(topology)
-  branch_orientation$zone <- distances(g)[1,]
+  branch_orientation$zone <- igraph::distances(g)[1,]
   bla <- table(topology[,1])
   children <- rep(0, num_branches)
   indices <- match(as.numeric(names(bla)), branch_names)
@@ -142,10 +142,10 @@ flat_simulation <- function(cell_params, param_file, mode = "prosstt") {
     }
   }
 
-  root <- which(sapply(sapply(V(g), function(x) neighbors(g,x, mode="in")), length) == 0)
-  depth_first_search <- igraph::bfs(g, root)
+  root <- which(sapply(sapply(igraph::V(g), function(x) igraph::neighbors(g,x, mode="in")), length) == 0)
+  breadth_first_search <- igraph::bfs(g, root)
 
-  for (n_from in depth_first_search$order) {
+  for (n_from in breadth_first_search$order) {
     b_from <- which(branch_names == n_from)
     offsets <- fan_out(children[b_from])
     destinations <- topology[,2][topology[,1] == n_from]
@@ -173,7 +173,7 @@ flat_simulation <- function(cell_params, param_file, mode = "prosstt") {
   }
 
 
-  for (n_from in depth_first_search$order) {
+  for (n_from in breadth_first_search$order) {
     b_from <- which(branch_names == n_from)
     destinations <- topology[,2][topology[,1] == n_from]
     for (i in seq_along(destinations)) {
