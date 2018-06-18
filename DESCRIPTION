@@ -1,7 +1,7 @@
 Package: prosstt
 Type: Package
 Date: 2018-06-18
-Title: Tools For The Evaluation Of PROSSTT Simulations
+Title: Tools for the Evaluation of PROSSTT Simulations
 Version: 1.0.0
 Authors@R: c(person("Nikolaos", "Papadopoulos", role = c("aut", "cre"),
                      email = "npapado@mpibpc.mpg.de"),
@@ -24,6 +24,5 @@ Imports: igraph,
     readr,
     viridis,
     LSD
-Suggests: merlot
 URL: https://github.com/soedinglab/prosstt-r
 BugReports: https://github.com/soedinglab/prosstt-r/issues
