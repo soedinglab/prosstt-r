@@ -31,4 +31,4 @@ install_github("soedinglab/prosstt-r")
 
 ## How to use
 
-An Rmd notebook with a detailed tutorial is provided.
+A notebook with a detailed tutorial is [provided](https://soedinglab.github.io/prosstt-r/example/).

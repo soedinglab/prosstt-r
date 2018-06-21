@@ -55,12 +55,12 @@ gg_color_hue <- function(n) {
 #' @importFrom viridis viridis
 #' @importFrom graphics axis par plot points
 plot_flat_tree <- function(cell_params, branch_orientation, prediction, pcex=1,
-                           plot_title = "", col_pal = NA, time_step = 50) {
+                           plot_title = "", col_pal = NULL, time_step = 50) {
   times <- cell_params$pseudotime
   branches <- cell_params$branches + 1
   branch_names <- sort(unique(branches))
 
-  if (is.na(col_pal)) {
+  if (is.null(col_pal)) {
     n <- length(unique(prediction))
     if (n < 25) { # we are in branch territory
       col_pal <- LSD::distinctcolors(n, show = FALSE, bw = TRUE)
@@ -69,6 +69,8 @@ plot_flat_tree <- function(cell_params, branch_orientation, prediction, pcex=1,
       col_pal <- viridis::viridis(100)
       cols <- map2color(prediction, col_pal)
     }
+  } else {
+    cols <- col_pal[as.factor(prediction)]
   }
 
   par(mar = c(2., 1., 2., 1.))
